@@ -1,0 +1,2064 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Suivi OKAZOR</title><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Suivi OKAZOR</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FAF7F1; --surface:#FFFFFF; --surface-2:#F3EEE3; --surface-3:#EAE1CD;
+    --border:#E4DCC8; --border-soft:#EDE6D6;
+    --text:#2A241C; --text-muted:#7C7263; --text-faint:#A79C89;
+    --accent:#96692F; --accent-strong:#7C5423; --accent-soft:#F1E3C8; --accent-contrast:#FFFFFF;
+    --success:#3F7D52; --success-strong:#2E5E3D; --success-soft:#E4F0E5;
+    --warning:#B5651D; --warning-soft:#F7E7D4;
+    --danger:#B03A3A; --danger-strong:#8E2E2E; --danger-soft:#F6E0DE;
+    --shadow: rgba(42,36,28,0.10);
+    --radius-lg: 16px; --radius-md: 10px; --radius-sm: 7px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#1B1712; --surface:#241F18; --surface-2:#2C261D; --surface-3:#352D21;
+      --border:#3A3225; --border-soft:#332C21;
+      --text:#F1EAD9; --text-muted:#B3A891; --text-faint:#7E7562;
+      --accent:#D9A65C; --accent-strong:#EFC079; --accent-soft:#3A2F1C; --accent-contrast:#241F18;
+      --success:#6FBF86; --success-strong:#8FD39F; --success-soft:#1E3226;
+      --warning:#E0975A; --warning-soft:#3A2A19;
+      --danger:#E07272; --danger-strong:#EE9494; --danger-soft:#3A2020;
+      --shadow: rgba(0,0,0,0.45);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#1B1712; --surface:#241F18; --surface-2:#2C261D; --surface-3:#352D21;
+    --border:#3A3225; --border-soft:#332C21;
+    --text:#F1EAD9; --text-muted:#B3A891; --text-faint:#7E7562;
+    --accent:#D9A65C; --accent-strong:#EFC079; --accent-soft:#3A2F1C; --accent-contrast:#241F18;
+    --success:#6FBF86; --success-strong:#8FD39F; --success-soft:#1E3226;
+    --warning:#E0975A; --warning-soft:#3A2A19;
+    --danger:#E07272; --danger-strong:#EE9494; --danger-soft:#3A2020;
+    --shadow: rgba(0,0,0,0.45);
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family:"Work Sans", -apple-system, "Segoe UI", sans-serif;
+    font-variant-numeric: tabular-nums;
+  }
+  h1,h2,h3{font-family:"Fraunces","Iowan Old Style",serif; font-weight:600; text-wrap:balance; margin:0;}
+  ::selection{background:var(--accent-soft);}
+  :focus-visible{outline:2px solid var(--accent); outline-offset:2px; border-radius:4px;}
+  button, input, select{font-family:inherit; font-size:inherit; color:inherit;}
+  @media (prefers-reduced-motion: reduce){ *{animation-duration:0.001ms !important; transition-duration:0.001ms !important;} }
+
+  .app{max-width:1180px; margin:0 auto; padding:28px 24px 64px;}
+
+  /* ---- header ---- */
+  .topbar{display:flex; align-items:baseline; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:6px;}
+  .brand{display:flex; align-items:baseline; gap:12px; flex-wrap:wrap;}
+  .brand-mark{font-family:"Fraunces",serif; font-style:italic; font-weight:600; font-size:2rem; letter-spacing:0.01em;}
+  .brand-tag{color:var(--text-muted); font-size:0.85rem; letter-spacing:0.04em; text-transform:uppercase;}
+  .status{display:flex; align-items:center; gap:8px; font-size:0.8rem; color:var(--text-muted);}
+  .status-dot{width:7px; height:7px; border-radius:50%; background:var(--success); flex:none;}
+  .status-dot.offline{background:var(--warning);}
+
+  /* ---- tabs ---- */
+  .tabs{display:flex; gap:4px; margin:22px 0 20px; border-bottom:1px solid var(--border);}
+  .tab{
+    appearance:none; border:none; background:transparent; cursor:pointer;
+    padding:10px 4px; margin-right:22px; font-size:0.95rem; font-weight:600; color:var(--text-muted);
+    border-bottom:2px solid transparent; translate:0 1px;
+  }
+  .tab:hover{color:var(--text);}
+  .tab.active{color:var(--accent-strong); border-bottom-color:var(--accent);}
+  .panel-view[hidden]{display:none;}
+
+  /* ---- layout helpers ---- */
+  .kpi-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:14px; margin-bottom:22px;}
+  .row-2{display:grid; grid-template-columns:1.5fr 1fr; gap:16px; margin-bottom:22px;}
+  @media (max-width:820px){ .row-2{grid-template-columns:1fr;} }
+
+  .card{
+    background:var(--surface); border:1px solid var(--border-soft); border-radius:var(--radius-lg);
+    padding:20px 22px; box-shadow:0 1px 2px var(--shadow);
+  }
+  .card h2{font-size:1.05rem; margin-bottom:2px;}
+  .card .card-sub{color:var(--text-muted); font-size:0.82rem; margin-bottom:16px;}
+
+  /* ---- KPI tile ---- */
+  .kpi-card{
+    background:var(--surface); border:1px solid var(--border-soft); border-radius:var(--radius-lg);
+    padding:16px 18px; display:flex; flex-direction:column; gap:6px; box-shadow:0 1px 2px var(--shadow);
+  }
+  .kpi-label{font-size:0.75rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-muted); font-weight:600;}
+  .kpi-value{font-family:"Fraunces",serif; font-weight:600; font-size:1.65rem; line-height:1.1;}
+  .kpi-sub{font-size:0.8rem; color:var(--text-muted); display:flex; align-items:center; gap:5px;}
+  .delta{font-weight:600; padding:1px 6px; border-radius:20px; font-size:0.74rem;}
+  .delta.up{color:var(--success-strong); background:var(--success-soft);}
+  .delta.down{color:var(--danger-strong); background:var(--danger-soft);}
+  .delta.flat{color:var(--text-muted); background:var(--surface-2);}
+
+  /* ---- goal tile ---- */
+  .goal-card{grid-column:span 1;}
+  .goal-bar-track{height:8px; border-radius:6px; background:var(--surface-3); overflow:hidden; margin:10px 0 6px;}
+  .goal-bar-fill{height:100%; background:var(--accent); border-radius:6px; transition:width .4s ease;}
+  .goal-edit-btn{background:none; border:none; color:var(--accent-strong); font-size:0.78rem; font-weight:600; cursor:pointer; padding:0; text-decoration:underline; text-underline-offset:2px;}
+  .goal-edit-row{display:flex; gap:6px; margin-top:8px;}
+  .goal-edit-row input{width:100px; padding:5px 8px; border:1px solid var(--border); border-radius:6px; background:var(--surface);}
+
+  /* ---- chart ---- */
+  .chart-wrap svg{width:100%; height:auto; display:block; overflow:visible;}
+  .chart-empty{color:var(--text-muted); font-size:0.88rem; padding:30px 0; text-align:center;}
+  .axis-label{fill:var(--text-faint); font-size:10px; font-family:"Work Sans",sans-serif;}
+  .grid-line{stroke:var(--border-soft); stroke-width:1;}
+  .bar-ca{fill:var(--accent);}
+  .bar-marge{fill:var(--success);}
+  .bar-value{fill:var(--text-muted); font-size:9.5px; font-family:"Work Sans",sans-serif;}
+  .chart-legend{display:flex; gap:16px; font-size:0.78rem; color:var(--text-muted); margin-bottom:10px;}
+  .legend-dot{display:inline-block; width:8px; height:8px; border-radius:2px; margin-right:5px;}
+
+  /* ---- top pieces list ---- */
+  .rank-list{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px;}
+  .rank-item{display:flex; align-items:center; gap:10px;}
+  .rank-num{font-family:"Fraunces",serif; font-weight:600; color:var(--text-faint); font-size:0.95rem; width:16px; flex:none;}
+  .rank-body{flex:1; min-width:0;}
+  .rank-name{font-size:0.86rem; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .rank-bar-track{height:5px; border-radius:4px; background:var(--surface-3); margin-top:4px; overflow:hidden;}
+  .rank-bar-fill{height:100%; background:var(--accent); border-radius:4px;}
+  .rank-value{font-size:0.82rem; font-weight:600; color:var(--success-strong); flex:none;}
+
+  /* ---- forms ---- */
+  .field-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:10px;}
+  label{display:block; font-size:0.76rem; font-weight:600; color:var(--text-muted); margin-bottom:4px;}
+  input, select{
+    width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:var(--radius-sm);
+    background:var(--surface); color:var(--text);
+  }
+  input:focus, select:focus{border-color:var(--accent);}
+  .form-actions{display:flex; gap:8px; margin-top:14px; align-items:center;}
+  .btn{
+    appearance:none; border:1px solid transparent; border-radius:8px; padding:9px 16px;
+    font-weight:600; font-size:0.85rem; cursor:pointer;
+  }
+  .btn-primary{background:var(--accent); color:var(--accent-contrast);}
+  .btn-primary:hover{background:var(--accent-strong);}
+  .btn-ghost{background:transparent; border-color:var(--border); color:var(--text);}
+  .btn-ghost:hover{border-color:var(--text-faint);}
+  .btn-sm{padding:5px 10px; font-size:0.76rem; border-radius:6px;}
+  .btn:disabled{opacity:0.5; cursor:not-allowed;}
+
+  /* ---- tables ---- */
+  .table-scroll{overflow-x:auto;}
+  .list-scroll{max-height:520px; overflow-y:auto; overflow-x:auto; border:1px solid var(--border-soft); border-radius:var(--radius-md);}
+  table{width:100%; border-collapse:collapse; font-size:0.84rem; min-width:640px;}
+  thead th{
+    position:sticky; top:0; background:var(--surface-2); text-align:left; font-size:0.72rem;
+    text-transform:uppercase; letter-spacing:0.04em; color:var(--text-muted); font-weight:600;
+    padding:9px 12px; border-bottom:1px solid var(--border); white-space:nowrap;
+  }
+  tbody td{padding:9px 12px; border-bottom:1px solid var(--border-soft); vertical-align:middle;}
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr:hover{background:var(--surface-2);}
+  td.num, th.num{text-align:right; font-variant-numeric:tabular-nums;}
+  .cell-muted{color:var(--text-muted);}
+  .cell-actions{display:flex; gap:6px; justify-content:flex-end; white-space:nowrap;}
+  .icon-btn{
+    appearance:none; border:1px solid var(--border); background:var(--surface); border-radius:6px;
+    width:26px; height:26px; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; color:var(--text-muted);
+  }
+  .icon-btn:hover{border-color:var(--text-faint); color:var(--text);}
+  .icon-btn.danger:hover{border-color:var(--danger); color:var(--danger);}
+  .confirm-row{display:flex; gap:6px; align-items:center; justify-content:flex-end;}
+  .confirm-text{font-size:0.76rem; color:var(--danger-strong); font-weight:600;}
+
+  .badge{display:inline-block; font-size:0.72rem; font-weight:600; padding:2px 8px; border-radius:20px; background:var(--surface-2); color:var(--text-muted);}
+
+  /* ---- month filter chips ---- */
+  .chip-row{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px;}
+  .chip{
+    appearance:none; border:1px solid var(--border); background:var(--surface); color:var(--text-muted);
+    padding:6px 13px; border-radius:20px; font-size:0.8rem; font-weight:600; cursor:pointer;
+  }
+  .chip.active{background:var(--accent-soft); border-color:var(--accent); color:var(--accent-strong);}
+
+  .search-row{display:flex; gap:10px; margin-bottom:12px; align-items:center; flex-wrap:wrap;}
+  .search-input{max-width:280px;}
+  .empty-note{color:var(--text-muted); font-size:0.85rem; padding:22px; text-align:center;}
+
+  /* ---- toast ---- */
+  .toast{
+    position:fixed; bottom:22px; left:50%; translate:-50% 0; background:var(--text); color:var(--bg);
+    padding:10px 18px; border-radius:20px; font-size:0.84rem; font-weight:500; box-shadow:0 6px 20px var(--shadow);
+    z-index:50;
+  }
+  :root[data-theme="dark"] .toast, @media (prefers-color-scheme:dark){ .toast{ } }
+  .toast.danger{background:var(--danger-strong);}
+
+  .section-title{display:flex; align-items:baseline; justify-content:space-between; gap:10px; margin-bottom:14px; flex-wrap:wrap;}
+  .section-title h2{font-size:1.15rem;}
+  .hint{font-size:0.78rem; color:var(--text-muted);}
+
+  /* ---- undo bar ---- */
+  .undo-bar{
+    display:flex; align-items:center; gap:10px; margin-bottom:16px; padding:8px 12px;
+    background:var(--surface-2); border:1px solid var(--border-soft); border-radius:var(--radius-md);
+    flex-wrap:wrap;
+  }
+  .undo-bar .btn{flex:none;}
+  .undo-bar .hint{flex:1; min-width:120px;}
+</style>
+
+<div class="app">
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">OKAZOR</span>
+      <span class="brand-tag">Achats · Stock · Ventes</span>
+    </div>
+    <div class="status"><span class="status-dot" id="statusDot"></span><span id="statusText">Chargement…</span><button class="btn btn-ghost btn-sm" id="exportBtn" type="button">Exporter (JSON)</button></div>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button class="tab active" data-tab="apercu" role="tab" aria-selected="true">Aperçu</button>
+    <button class="tab" data-tab="stock" role="tab" aria-selected="false">Stock</button>
+    <button class="tab" data-tab="ventes" role="tab" aria-selected="false">Ventes</button>
+    <button class="tab" data-tab="comptes" role="tab" aria-selected="false">Comptes Vinted</button>
+    <button class="tab" data-tab="fonte" role="tab" aria-selected="false">Or à fondre</button>
+  </nav>
+
+  <main>
+    <!-- ================= APERCU ================= -->
+    <section id="tab-apercu" class="panel-view">
+      <div class="undo-bar">
+        <button class="btn btn-ghost btn-sm" id="undoBtn-apercu" disabled>↺ Annuler la dernière action</button>
+        <span class="hint" id="undoLabel-apercu"></span>
+      </div>
+      <div class="kpi-grid" id="apercuKpis"></div>
+
+      <div class="row-2">
+        <div class="card">
+          <h2>Évolution mensuelle</h2>
+          <div class="card-sub">Chiffre d'affaires et marge, par mois de vente</div>
+          <div class="chart-legend">
+            <span><span class="legend-dot" style="background:var(--accent)"></span>Chiffre d'affaires</span>
+            <span><span class="legend-dot" style="background:var(--success)"></span>Marge</span>
+          </div>
+          <div class="chart-wrap" id="monthlyChart"></div>
+        </div>
+
+        <div class="card goal-card">
+          <h2>Objectif du mois</h2>
+          <div class="card-sub" id="goalMonthLabel"></div>
+          <div id="goalBody"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Pièces les plus rentables</h2>
+        <div class="card-sub">Meilleures marges réalisées, toutes ventes confondues</div>
+        <ul class="rank-list" id="topPieces"></ul>
+      </div>
+    </section>
+
+    <!-- ================= STOCK ================= -->
+    <section id="tab-stock" class="panel-view" hidden>
+      <div class="undo-bar">
+        <button class="btn btn-ghost btn-sm" id="undoBtn-stock" disabled>↺ Annuler la dernière action</button>
+        <span class="hint" id="undoLabel-stock"></span>
+      </div>
+      <div class="kpi-grid" id="stockKpis"></div>
+
+      <div class="card" style="margin-bottom:22px;">
+        <div class="section-title"><h2 id="stockFormTitle">Ajouter une pièce en stock</h2></div>
+        <form id="stockForm">
+          <div class="field-grid">
+            <div><label for="stRef">Réf.</label><input id="stRef" type="text" placeholder="ex. 1020"></div>
+            <div style="grid-column:span 2;"><label for="stProduct">Article</label><input id="stProduct" type="text" required placeholder="ex. bague saphir 9k"></div>
+            <div><label for="stWeight">Poids (g)</label><input id="stWeight" type="number" step="0.01" min="0" required></div>
+            <div><label for="stCost">Prix d'achat (€)</label><input id="stCost" type="number" step="0.01" min="0" required></div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary" id="stockSubmitBtn">Ajouter au stock</button>
+            <button type="button" class="btn btn-ghost" id="stockCancelBtn" hidden>Annuler</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="section-title">
+          <h2>Inventaire</h2>
+          <span class="hint" id="stockCountHint"></span>
+        </div>
+        <div class="search-row">
+          <input class="search-input" id="stockSearch" type="text" placeholder="Rechercher un article, une réf., un poids ou un prix d'achat…">
+          <select id="stockSort">
+            <option value="cost-desc">Prix d'achat ↓</option>
+            <option value="cost-asc">Prix d'achat ↑</option>
+            <option value="weight-desc">Poids ↓</option>
+            <option value="name-asc">Article (A→Z)</option>
+            <option value="ref-asc">Réf.</option>
+          </select>
+        </div>
+        <div class="list-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Réf.</th><th>Article</th><th class="num">Poids (g)</th><th class="num">Achat</th>
+                <th class="num">Revente est. 100€/g</th><th class="num">Revente est. 110€/g</th><th class="num">Revente est. 120€/g</th><th class="num">Revente est. 130€/g</th><th></th>
+              </tr>
+            </thead>
+            <tbody id="stockTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= VENTES ================= -->
+    <section id="tab-ventes" class="panel-view" hidden>
+      <div class="undo-bar">
+        <button class="btn btn-ghost btn-sm" id="undoBtn-ventes" disabled>↺ Annuler la dernière action</button>
+        <span class="hint" id="undoLabel-ventes"></span>
+      </div>
+      <div class="kpi-grid" id="ventesKpis"></div>
+
+      <div class="card" style="margin-bottom:22px;">
+        <div class="section-title"><h2 id="salesFormTitle">Enregistrer une vente</h2></div>
+        <form id="salesForm">
+          <div class="field-grid">
+            <div><label for="svRef">Réf.</label><input id="svRef" type="text" placeholder="ex. #1020"></div>
+            <div style="grid-column:span 2;"><label for="svProduct">Article</label><input id="svProduct" type="text" required placeholder="ex. bague saphir 9k"></div>
+            <div><label for="svDate">Date</label><input id="svDate" type="date" required></div>
+            <div><label for="svWeight">Poids (g)</label><input id="svWeight" type="number" step="0.01" min="0"></div>
+            <div><label for="svCost">Prix d'achat (€)</label><input id="svCost" type="number" step="0.01" min="0" required></div>
+            <div><label for="svPrice">Prix de vente (€)</label><input id="svPrice" type="number" step="0.01" min="0" required></div>
+            <div><label for="svAccount">Compte Vinted</label><select id="svAccount"></select></div>
+            <div id="svNewAccountWrap" hidden><label for="svNewAccount">Nom du nouveau compte</label><input id="svNewAccount" type="text" placeholder="ex. Mh7183"></div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary" id="salesSubmitBtn">Enregistrer la vente</button>
+            <button type="button" class="btn btn-ghost" id="salesCancelBtn" hidden>Annuler</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="section-title">
+          <h2>Journal des ventes</h2>
+          <span class="hint" id="salesCountHint"></span>
+        </div>
+        <div class="chip-row" id="monthChips"></div>
+        <div class="list-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th><th>Réf.</th><th>Article</th><th class="num">Poids (g)</th>
+                <th class="num">Achat</th><th class="num">Vente</th><th class="num">Marge</th><th>Compte</th><th></th>
+              </tr>
+            </thead>
+            <tbody id="salesTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= COMPTES VINTED ================= -->
+    <section id="tab-comptes" class="panel-view" hidden>
+      <div class="undo-bar">
+        <button class="btn btn-ghost btn-sm" id="undoBtn-comptes" disabled>↺ Annuler la dernière action</button>
+        <span class="hint" id="undoLabel-comptes"></span>
+      </div>
+      <div class="section-title">
+        <h2>Comptes Vinted</h2>
+        <span class="hint">Ventes réparties sur plusieurs comptes — CA par compte, pour surveiller le seuil de déclaration de chacun</span>
+      </div>
+
+      <div class="card" style="margin-bottom:22px;">
+        <h2 style="font-size:1rem;">Seuil de vigilance (par compte, par année)</h2>
+        <div class="card-sub">Au-delà de ce montant sur un compte, sur l'année, le compte peut déclencher une déclaration automatique de la plateforme.</div>
+        <div id="thresholdBody"></div>
+      </div>
+
+      <div class="card" style="margin-bottom:22px;">
+        <h2 style="font-size:1rem;">Numéro de compte</h2>
+        <div class="card-sub">Attribuez un numéro à chaque compte — c'est ce numéro que vous choisirez dans l'onglet Ventes pour rattacher automatiquement une vente à son compte.</div>
+        <div id="accountNumBody"></div>
+      </div>
+
+      <div class="kpi-grid" id="comptesKpis"></div>
+
+      <div class="card" style="margin-bottom:22px;">
+        <div class="section-title"><h2>Mettre à jour un mois</h2></div>
+        <div class="hint" style="margin-bottom:10px;">À partir de septembre 2026, attribuez plutôt le compte directement lors de l'enregistrement de chaque vente (onglet Ventes) — le CA du mois se calcule alors tout seul ici. Ce formulaire reste utile pour corriger un mois ou saisir de l'historique.</div>
+        <form id="compteForm">
+          <div class="field-grid">
+            <div><label for="cpAccount">Compte</label><select id="cpAccount"></select></div>
+            <div id="cpNewNameWrap" hidden><label for="cpNewName">Nom du nouveau compte</label><input id="cpNewName" type="text" placeholder="ex. Mh7183"></div>
+            <div><label for="cpMonth">Mois</label><input id="cpMonth" type="month" required></div>
+            <div><label for="cpAmount">CA du mois (€)</label><input id="cpAmount" type="number" step="0.01" min="0" required></div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Enregistrer</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="section-title"><h2>Détail par compte et par mois</h2></div>
+        <div class="list-scroll">
+          <table>
+            <thead><tr id="comptesTableHead"></tr></thead>
+            <tbody id="comptesTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= OR À FONDRE ================= -->
+    <section id="tab-fonte" class="panel-view" hidden>
+      <div class="undo-bar">
+        <button class="btn btn-ghost btn-sm" id="undoBtn-fonte" disabled>↺ Annuler la dernière action</button>
+        <span class="hint" id="undoLabel-fonte"></span>
+      </div>
+      <div class="section-title">
+        <h2>Or à fondre</h2>
+        <span class="hint">Deux parties : les achats (lots réservés à la fonte, par carat) et les ventes déjà réalisées à la fonderie (facturées en Dirham marocain, converties en €)</span>
+      </div>
+
+      <div class="kpi-grid" id="fonteKpis"></div>
+
+      <div class="card" style="margin-bottom:22px;">
+        <h2 style="font-size:1rem;">Cours de l'or 18k (€/g)</h2>
+        <div class="card-sub">C'est sous cette forme (18k) que l'or à fondre est vendu à la fonderie — renseignez le cours du jour pour estimer la valeur des lots en attente.</div>
+        <div id="meltRateBody"></div>
+      </div>
+
+      <!-- ---- PARTIE 1 : ACHATS ---- -->
+      <div class="section-title" style="margin-top:6px;"><h2 style="font-size:1.1rem;">1 · Achats — lots réservés à la fonte</h2></div>
+
+      <div class="card" style="margin-bottom:22px;">
+        <div class="section-title"><h2 style="font-size:1rem;" id="fonteFormTitle">Ajouter un lot</h2></div>
+        <div class="hint" style="margin-bottom:10px;">Un bijou ajouté sur un carat déjà en attente (non vendu) vient s'additionner dans la même ligne — poids et prix d'achat cumulés — plutôt que de créer une nouvelle ligne. Une fois la ligne marquée vendue, le carat suivant repart sur une nouvelle ligne.</div>
+        <form id="fonteForm">
+          <div class="field-grid">
+            <div><label for="flCarat">Carat</label><input id="flCarat" type="text" required placeholder="ex. 14k"></div>
+            <div><label for="flWeight">Poids carat d'origine (g)</label><input id="flWeight" type="number" step="0.01" min="0"></div>
+            <div><label for="flWeight18k">Poids éq. 18k (g) — auto</label><input id="flWeight18k" type="number" step="0.01" min="0" placeholder="calculé automatiquement"></div>
+            <div><label for="flCost">Prix d'achat (€)</label><input id="flCost" type="number" step="0.01" min="0"></div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary" id="fonteSubmitBtn">Ajouter le lot</button>
+            <button type="button" class="btn btn-ghost" id="fonteCancelBtn" hidden>Annuler</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="card" style="margin-bottom:28px;">
+        <div class="section-title">
+          <h2 style="font-size:1rem;">Lots réservés à la fonte</h2>
+          <span class="hint" id="fonteCountHint"></span>
+        </div>
+        <div class="list-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Carat</th><th class="num">Poids d'origine (g)</th><th class="num">Poids éq. 18k (g)</th>
+                <th class="num">Prix d'achat</th><th class="num">Prix de vente</th><th class="num">Bénéfice</th><th>Statut</th><th></th>
+              </tr>
+            </thead>
+            <tbody id="fonteTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ---- PARTIE 2 : VENTES EN DIRHAM ---- -->
+      <div class="section-title"><h2 style="font-size:1.1rem;">2 · Ventes — or vendu à la fonderie (facturé en Dh, converti en €)</h2></div>
+      <div class="hint" style="margin-bottom:14px;">Conversion appliquée : 1 € = 10,65 DH. Tableau pré-rempli de novembre 2025 à septembre 2027 — complétez au fur et à mesure.</div>
+
+      <div class="card" style="margin-bottom:22px;">
+        <div class="section-title"><h2 style="font-size:1rem;">Enregistrer une vente du mois</h2></div>
+        <form id="fonteDhForm">
+          <div class="field-grid">
+            <div><label for="fdMonth">Mois</label><input id="fdMonth" type="month" required></div>
+            <div><label for="fdWeight">Poids vendu (g)</label><input id="fdWeight" type="number" step="0.01" min="0"></div>
+            <div><label for="fdPriceDh">Prix / gramme (DH)</label><input id="fdPriceDh" type="number" step="0.01" min="0"></div>
+            <div><label for="fdCaEur">CA converti (€) — auto</label><input id="fdCaEur" type="number" step="0.01" min="0" placeholder="calculé automatiquement"></div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Enregistrer</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="section-title"><h2 style="font-size:1rem;">Détail par mois</h2></div>
+        <div class="list-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Mois</th><th class="num">Poids vendu (g)</th><th class="num">Prix / g (DH)</th><th class="num">Montant (DH)</th><th class="num">CA converti (€)</th><th></th>
+              </tr>
+            </thead>
+            <tbody id="fonteDhTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ============================================================
+     STATE
+  ============================================================ */
+  var state = {
+    stock: [],       // {id, ref, product, weight, cost}
+    sales: [],       // {id, ref, product, weight, cost, price, date, month}
+    goal: {},         // {monthlyTarget}
+    vintedAccounts: [], // {id, name, num, ca:{ "2026-01": 701, ... }}
+    vintedThreshold: null, // {amount}
+    meltLots: [], // {id, carat, weightOrigin, weight18k, cost, sold, salePrice}
+    meltDhSales: [], // {id (="YYYY-MM"), weightSold, pricePerGramDh, caEur, note}
+    meltRate18k: null, // {amount} — cours du jour de l'or 18k, en €/g
+    confirmDeleteMeltId: null,
+    editingMeltId: null,
+    editingStockId: null,
+    dbReady: false,
+    db: null,
+    activeTab: "apercu",
+    stockSearch: "",
+    stockSort: "cost-desc",
+    salesMonthFilter: "all",
+    editingSaleId: null,
+    pendingStockDelete: null, // stock doc id to remove once a "vendu" sale is confirmed
+    confirmDeleteStockId: null,
+    confirmDeleteSaleId: null
+  };
+
+  var MONTHS_FR = ["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"];
+
+  function fmtMonth(monthKey){
+    if(!monthKey) return "—";
+    var parts = monthKey.split("-");
+    var y = parts[0], m = parseInt(parts[1],10);
+    return MONTHS_FR[m-1] + " " + y;
+  }
+  function todayKey(){
+    var d = new Date();
+    return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0");
+  }
+  function monthKeyFromDate(dateStr){
+    return dateStr ? dateStr.slice(0,7) : null;
+  }
+  function fmtEUR(n, decimals){
+    if(n === null || n === undefined || isNaN(n)) n = 0;
+    var d = decimals === undefined ? 2 : decimals;
+    return new Intl.NumberFormat("fr-FR", {style:"currency", currency:"EUR", minimumFractionDigits:d, maximumFractionDigits:d}).format(n);
+  }
+  function fmtNum(n, decimals){
+    if(n === null || n === undefined || isNaN(n)) n = 0;
+    return new Intl.NumberFormat("fr-FR", {minimumFractionDigits:decimals||0, maximumFractionDigits:decimals||2}).format(n);
+  }
+  function fmtDate(dateStr){
+    if(!dateStr) return "";
+    var d = new Date(dateStr + "T00:00:00");
+    return d.toLocaleDateString("fr-FR", {day:"2-digit", month:"2-digit", year:"numeric"});
+  }
+  function escapeHtml(s){
+    return String(s === undefined || s === null ? "" : s).replace(/[&<>"']/g, function(c){
+      return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
+    });
+  }
+
+  var toastTimer = null;
+  function toast(msg, isDanger){
+    var el = document.getElementById("toast");
+    el.textContent = msg;
+    el.className = "toast" + (isDanger ? " danger" : "");
+    el.hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ el.hidden = true; }, 3200);
+  }
+
+  /* ============================================================
+     TABS
+  ============================================================ */
+  document.querySelectorAll(".tab").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      var target = btn.getAttribute("data-tab");
+      state.activeTab = target;
+      document.querySelectorAll(".tab").forEach(function(b){
+        var on = b === btn;
+        b.classList.toggle("active", on);
+        b.setAttribute("aria-selected", on ? "true" : "false");
+      });
+      ["apercu","stock","ventes","comptes","fonte"].forEach(function(name){
+        document.getElementById("tab-"+name).hidden = name !== target;
+      });
+    });
+  });
+
+  /* ============================================================
+     DB LAYER  (real db capability, or local in-memory fallback)
+  ============================================================ */
+  function setStatus(text, offline){
+    document.getElementById("statusText").textContent = text;
+    document.getElementById("statusDot").classList.toggle("offline", !!offline);
+  }
+
+  var localIdCounter = 1;
+  function localId(){ return "local-" + (localIdCounter++); }
+
+  /* ------------------------------------------------------------
+     RAW DB HELPERS — plain CRUD, no undo bookkeeping. Every
+     mutation the app makes goes through these three, whether it
+     targets the real db capability or the local in-memory fallback,
+     so the undo layer (below) only ever has to know about these.
+  ------------------------------------------------------------ */
+  var ARRAY_COLLECTIONS = ["stock","sales","vintedAccounts","meltLots","meltDhSales"];
+  async function rawAdd(collection, data){
+    if(state.db){
+      var ref = await state.db.collection(collection).add(data);
+      return ref && ref.id;
+    } else {
+      var id = localId();
+      state[collection].push(Object.assign({id:id}, data));
+      renderAll();
+      return id;
+    }
+  }
+  async function rawSet(collection, id, data){
+    if(state.db){ await state.db.doc(collection+"/"+id).set(data); }
+    else {
+      var arr = state[collection];
+      var idx = arr.findIndex(function(d){ return d.id === id; });
+      var obj = Object.assign({id:id}, data);
+      if(idx > -1) arr[idx] = obj; else arr.push(obj);
+      renderAll();
+    }
+  }
+  async function rawDelete(collection, id){
+    if(state.db){ await state.db.doc(collection+"/"+id).delete(); }
+    else { state[collection] = state[collection].filter(function(d){ return d.id !== id; }); renderAll(); }
+  }
+  // path looks like "settings/goal" or "settings/vintedThreshold" — single docs,
+  // mirrored locally as state.goal / state.vintedThreshold.
+  async function rawSetDoc(path, data){
+    if(state.db){ await state.db.doc(path).set(data); }
+    else {
+      var key = path.split("/")[1];
+      state[key] = data;
+      renderAll();
+    }
+  }
+
+  var Store = {
+    async addStock(data){ return rawAdd("stock", data); },
+    async updateStock(id, data){ return rawSet("stock", id, data); },
+    async deleteStock(id){ return rawDelete("stock", id); },
+    async addSale(data){ return rawAdd("sales", data); },
+    async updateSale(id, data){ return rawSet("sales", id, data); },
+    async deleteSale(id){ return rawDelete("sales", id); },
+    async saveGoal(target){ return rawSetDoc("settings/goal", {monthlyTarget: target}); },
+    async saveAccountMonth(accountId, accountName, monthKey, amount){
+      var acc = state.vintedAccounts.find(function(a){ return a.id === accountId; });
+      var ca = Object.assign({}, acc ? acc.ca : {});
+      ca[monthKey] = amount;
+      return rawSet("vintedAccounts", accountId, {name: accountName, num: (acc && acc.num) || null, ca: ca});
+    },
+    async saveAccountNum(accountId, num){
+      var acc = state.vintedAccounts.find(function(a){ return a.id === accountId; });
+      if(!acc) return;
+      return rawSet("vintedAccounts", accountId, {name: acc.name, num: num, ca: acc.ca || {}});
+    },
+    // Creates a bare account (no CA yet) so it can be picked from the sale form's
+    // account selector. Auto-assigns the next free account number.
+    async ensureNewAccount(accountId, accountName){
+      var nextNum = state.vintedAccounts.reduce(function(m,a){ return Math.max(m, a.num||0); }, 0) + 1;
+      await rawSet("vintedAccounts", accountId, {name: accountName, num: nextNum, ca: {}});
+      return nextNum;
+    },
+    async saveThreshold(amount){ return rawSetDoc("settings/vintedThreshold", {amount: amount}); },
+    async addMeltLot(data){ return rawAdd("meltLots", data); },
+    async updateMeltLot(id, data){ return rawSet("meltLots", id, data); },
+    async deleteMeltLot(id){ return rawDelete("meltLots", id); },
+    async saveMeltDhSale(monthKey, data){ return rawSet("meltDhSales", monthKey, data); },
+    async saveMeltRate18k(amount){ return rawSetDoc("settings/meltRate18k", {amount: amount}); }
+  };
+
+  /* ------------------------------------------------------------
+     UNDO — one action-history stack per tab. Every user-triggered
+     mutation snapshots the collections/settings it's about to touch,
+     performs the change, then records how to restore that exact
+     snapshot. Undo is a diff against whatever the live state looks
+     like *at the moment it's pressed* (not at push time), so it stays
+     correct even after further edits — and pressing it repeatedly
+     walks back further through that tab's history.
+  ------------------------------------------------------------ */
+  var undoStacks = {apercu:[], stock:[], ventes:[], comptes:[], fonte:[]};
+  var undoBusy = {};
+
+  function cloneVal(v){ return v === null || v === undefined ? v : JSON.parse(JSON.stringify(v)); }
+  function stripId(d){ var c = Object.assign({}, d); delete c.id; return c; }
+
+  async function restoreCollectionDiff(name, oldList){
+    var newList = state[name] || [];
+    var oldById = {}; oldList.forEach(function(d){ oldById[d.id] = d; });
+    var newById = {}; newList.forEach(function(d){ newById[d.id] = d; });
+    var ops = [];
+    Object.keys(newById).forEach(function(id){
+      if(!(id in oldById)) ops.push(function(){ return rawDelete(name, id); });
+    });
+    Object.keys(oldById).forEach(function(id){
+      var oldData = stripId(oldById[id]);
+      var newDoc = newById[id];
+      if(!newDoc || JSON.stringify(stripId(newDoc)) !== JSON.stringify(oldData)){
+        ops.push(function(){ return rawSet(name, id, oldData); });
+      }
+    });
+    for(var i=0;i<ops.length;i++){ await ops[i](); }
+  }
+
+  // opts: {collections:[array-collection names], settings:[state keys among "goal","vintedThreshold","meltRate18k"]}
+  async function withUndo(tab, label, opts, fn){
+    var collSnap = {};
+    (opts.collections||[]).forEach(function(c){ collSnap[c] = cloneVal(state[c]); });
+    var settingsSnap = {};
+    (opts.settings||[]).forEach(function(s){ settingsSnap[s] = cloneVal(state[s]); });
+
+    await fn();
+
+    pushUndo(tab, label, async function(){
+      for(var name in collSnap){ await restoreCollectionDiff(name, collSnap[name]); }
+      for(var skey in settingsSnap){ await rawSetDoc("settings/"+skey, settingsSnap[skey]); }
+    });
+  }
+
+  function pushUndo(tab, label, undoFn){
+    var stack = undoStacks[tab];
+    if(!stack) return;
+    stack.push({label: label, undo: undoFn});
+    if(stack.length > 20) stack.shift();
+    renderUndoButtons();
+  }
+
+  async function undoLast(tab){
+    var stack = undoStacks[tab];
+    if(!stack || !stack.length || undoBusy[tab]) return;
+    var entry = stack.pop();
+    undoBusy[tab] = true;
+    renderUndoButtons();
+    try{
+      await entry.undo();
+      toast("Action annulée — " + entry.label);
+    }catch(err){
+      toast("Impossible d'annuler cette action", true);
+      stack.push(entry); // put it back so nothing is silently lost
+    }
+    undoBusy[tab] = false;
+    renderUndoButtons();
+  }
+
+  function renderUndoButtons(){
+    Object.keys(undoStacks).forEach(function(tab){
+      var btn = document.getElementById("undoBtn-"+tab);
+      var label = document.getElementById("undoLabel-"+tab);
+      if(!btn) return;
+      var stack = undoStacks[tab];
+      var has = stack.length > 0;
+      btn.disabled = !has || !!undoBusy[tab];
+      if(label) label.textContent = has ? ("Dernière action : " + stack[stack.length-1].label) : "Aucune action à annuler pour l'instant.";
+    });
+  }
+
+  ["apercu","stock","ventes","comptes","fonte"].forEach(function(tab){
+    var btn = document.getElementById("undoBtn-"+tab);
+    if(btn) btn.addEventListener("click", function(){ undoLast(tab); });
+  });
+
+  function seedLocalDemo(){
+    // Used only when the db capability is unavailable in this preview context.
+    state.stock = [
+      {id:"d1", ref:"221", product:"bague saphir oz", weight:2.11, cost:57},
+      {id:"d2", ref:"612", product:"bague topaze 9k", weight:0.42, cost:40},
+      {id:"d3", ref:"922", product:"collier 2 ors oz", weight:0.9, cost:58}
+    ];
+    state.sales = [
+      {id:"s1", ref:"#046", product:"collier oz", weight:2.2, cost:88, price:235, date:null, month:"2026-08"},
+      {id:"s2", ref:"#474", product:"Bo chimento", weight:2.6, cost:100, price:340, date:null, month:"2026-08"},
+      {id:"s3", ref:"#953", product:"Gourmette 2 ors", weight:2.54, cost:7, price:290, date:null, month:"2026-08"}
+    ];
+    state.goal = {};
+    state.vintedAccounts = [
+      {id:"a1", name:"Mh7183", ca:{"2026-01":701,"2026-02":600}},
+      {id:"a2", name:"Yamizami", ca:{"2026-01":566,"2026-02":739}}
+    ];
+    state.vintedThreshold = {amount: 2000};
+  }
+
+  async function initDb(){
+    try{
+      if(typeof claude === "undefined" || !claude.use){
+        setStatus("Aperçu hors ligne (démo)", true);
+        seedLocalDemo();
+        renderAll();
+        return;
+      }
+      var db = await claude.use("db");
+      if(!db){
+        setStatus("Aperçu hors ligne (démo)", true);
+        seedLocalDemo();
+        renderAll();
+        return;
+      }
+      state.db = db;
+      setStatus("Synchronisé");
+
+      db.collection("stock").orderBy("cost","desc").limit(1000).onSnapshot(function(snap){
+        state.stock = snap.docs.map(function(d){ return Object.assign({id:d.id}, d.data()); });
+        renderAll();
+      }, function(err){
+        setStatus("Synchronisation indisponible", true);
+      });
+
+      db.collection("sales").orderBy("date","desc").limit(1000).onSnapshot(function(snap){
+        state.sales = snap.docs.map(function(d){ return Object.assign({id:d.id}, d.data()); });
+        renderAll();
+      }, function(err){
+        setStatus("Synchronisation indisponible", true);
+      });
+
+      db.doc("settings/goal").onSnapshot(function(snap){
+        state.goal = snap.exists ? snap.data() : {};
+        renderAll();
+      }, function(err){});
+
+      db.collection("vintedAccounts").limit(200).onSnapshot(function(snap){
+        state.vintedAccounts = snap.docs.map(function(d){ return Object.assign({id:d.id}, d.data()); });
+        renderAll();
+      }, function(err){});
+
+      db.doc("settings/vintedThreshold").onSnapshot(function(snap){
+        state.vintedThreshold = snap.exists ? snap.data() : {amount: 2000};
+        renderAll();
+      }, function(err){});
+
+      db.collection("meltLots").limit(200).onSnapshot(function(snap){
+        state.meltLots = snap.docs.map(function(d){ return Object.assign({id:d.id}, d.data()); });
+        renderAll();
+      }, function(err){});
+
+      db.collection("meltDhSales").limit(200).onSnapshot(function(snap){
+        state.meltDhSales = snap.docs.map(function(d){ return Object.assign({id:d.id}, d.data()); });
+        renderAll();
+      }, function(err){});
+
+      db.doc("settings/meltRate18k").onSnapshot(function(snap){
+        state.meltRate18k = snap.exists ? snap.data() : null;
+        renderAll();
+      }, function(err){});
+    }catch(e){
+      setStatus("Aperçu hors ligne (démo)", true);
+      seedLocalDemo();
+      renderAll();
+    }
+  }
+
+  /* ============================================================
+     DERIVED DATA
+  ============================================================ */
+  function salesByMonth(){
+    var map = {};
+    state.sales.forEach(function(s){
+      var mk = s.month || monthKeyFromDate(s.date) || "inconnu";
+      if(!map[mk]) map[mk] = [];
+      map[mk].push(s);
+    });
+    return map;
+  }
+  function monthTotals(list){
+    var ca = 0, achat = 0;
+    list.forEach(function(s){ ca += (s.price||0); achat += (s.cost||0); });
+    return {ca:ca, achat:achat, marge: ca-achat, count:list.length};
+  }
+
+  /* ============================================================
+     RENDER: APERCU
+  ============================================================ */
+  function renderApercu(){
+    var byMonth = salesByMonth();
+    var months = Object.keys(byMonth).filter(function(m){ return m !== "inconnu"; }).sort();
+    var allTotals = monthTotals(state.sales);
+
+    var curKey = todayKey();
+    var prevDate = new Date(); prevDate.setMonth(prevDate.getMonth()-1);
+    var prevKey = prevDate.getFullYear() + "-" + String(prevDate.getMonth()+1).padStart(2,"0");
+    var curTotals = monthTotals(byMonth[curKey] || []);
+    var prevTotals = monthTotals(byMonth[prevKey] || []);
+
+    var stockValue = state.stock.reduce(function(a,s){ return a + (s.cost||0); }, 0);
+    var stockResale = state.stock.reduce(function(a,s){ return a + (s.weight||0)*100; }, 0);
+
+    function deltaHtml(cur, prev){
+      if(!prev) return '<span class="delta flat">nouveau</span>';
+      var pct = ((cur-prev)/prev)*100;
+      var cls = pct > 0.5 ? "up" : (pct < -0.5 ? "down" : "flat");
+      var sign = pct > 0 ? "+" : "";
+      return '<span class="delta '+cls+'">'+sign+fmtNum(pct,0)+'%</span>';
+    }
+
+    var kpis = [
+      {label:"Valeur du stock (achat)", value: fmtEUR(stockValue,0), sub: state.stock.length + " pièce" + (state.stock.length>1?"s":"") },
+      {label:"Revente estimée du stock", value: fmtEUR(stockResale,0), sub: "à 100 €/g"},
+      {label:"CA — " + fmtMonth(curKey), value: fmtEUR(curTotals.ca,0), sub: deltaHtml(curTotals.ca, prevTotals.ca) + " vs " + fmtMonth(prevKey), raw:true},
+      {label:"CA cumulé (toutes ventes)", value: fmtEUR(allTotals.ca,0), sub: fmtEUR(allTotals.marge,0) + " de marge"}
+    ];
+    document.getElementById("apercuKpis").innerHTML = kpis.map(function(k){
+      return '<div class="kpi-card"><div class="kpi-label">'+k.label+'</div><div class="kpi-value">'+k.value+'</div><div class="kpi-sub">'+(k.raw?k.sub:escapeHtml(k.sub))+'</div></div>';
+    }).join("");
+
+    renderMonthlyChart(months, byMonth);
+    renderGoal(curKey, curTotals);
+    renderTopPieces();
+  }
+
+  function renderMonthlyChart(months, byMonth){
+    var wrap = document.getElementById("monthlyChart");
+    if(months.length === 0){
+      wrap.innerHTML = '<div class="chart-empty">Aucune vente enregistrée pour l\'instant.</div>';
+      return;
+    }
+    var W = 640, H = 220, padL = 44, padR = 12, padT = 10, padB = 26;
+    var plotW = W - padL - padR, plotH = H - padT - padB;
+    var totals = months.map(function(m){ return monthTotals(byMonth[m]); });
+    var maxVal = Math.max.apply(null, totals.map(function(t){ return Math.max(t.ca, t.marge); }).concat([1]));
+    maxVal = maxVal * 1.15;
+
+    var groupW = plotW / months.length;
+    var barW = Math.min(26, groupW*0.32);
+    var gridLines = [0,0.25,0.5,0.75,1].map(function(f){
+      var y = padT + plotH * (1-f);
+      var val = maxVal * f;
+      return '<line class="grid-line" x1="'+padL+'" x2="'+(W-padR)+'" y1="'+y+'" y2="'+y+'"/>' +
+             '<text class="axis-label" x="'+(padL-6)+'" y="'+(y+3)+'" text-anchor="end">'+fmtNum(val,0)+'</text>';
+    }).join("");
+
+    var bars = months.map(function(m, i){
+      var t = totals[i];
+      var cx = padL + groupW*i + groupW/2;
+      var caH = (t.ca/maxVal)*plotH;
+      var mgH = (t.marge/maxVal)*plotH;
+      var caX = cx - barW - 2, mgX = cx + 2;
+      var caY = padT + plotH - caH, mgY = padT + plotH - mgH;
+      var label = fmtMonth(m).split(" ")[0].slice(0,3);
+      return (
+        '<rect class="bar-ca" x="'+caX+'" y="'+caY+'" width="'+barW+'" height="'+Math.max(caH,1)+'" rx="2"><title>'+fmtMonth(m)+' — CA '+fmtEUR(t.ca)+'</title></rect>' +
+        '<rect class="bar-marge" x="'+mgX+'" y="'+mgY+'" width="'+barW+'" height="'+Math.max(mgH,1)+'" rx="2"><title>'+fmtMonth(m)+' — Marge '+fmtEUR(t.marge)+'</title></rect>' +
+        '<text class="axis-label" x="'+cx+'" y="'+(H-6)+'" text-anchor="middle">'+label+'</text>'
+      );
+    }).join("");
+
+    wrap.innerHTML = '<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Évolution mensuelle du chiffre d\'affaires et de la marge">' +
+      gridLines + bars +
+      '<line x1="'+padL+'" x2="'+(W-padR)+'" y1="'+(padT+plotH)+'" y2="'+(padT+plotH)+'" stroke="var(--border)" stroke-width="1"/>' +
+      '</svg>';
+  }
+
+  function renderGoal(curKey, curTotals){
+    document.getElementById("goalMonthLabel").textContent = fmtMonth(curKey);
+    var target = state.goal && state.goal.monthlyTarget ? state.goal.monthlyTarget : 0;
+    var body = document.getElementById("goalBody");
+
+    if(!target){
+      body.innerHTML =
+        '<div class="kpi-value" style="font-size:1.3rem;">'+fmtEUR(curTotals.ca,0)+' <span style="color:var(--text-muted); font-size:0.85rem; font-weight:400;">réalisés</span></div>' +
+        '<div class="hint" style="margin:8px 0 10px;">Aucun objectif défini pour ce mois.</div>' +
+        '<button class="goal-edit-btn" id="goalSetBtn">Définir un objectif</button>' +
+        '<div class="goal-edit-row" id="goalEditRow" hidden>' +
+          '<input type="number" min="0" step="10" id="goalInput" placeholder="ex. 1500">' +
+          '<button class="btn btn-primary btn-sm" id="goalSaveBtn">OK</button>' +
+        '</div>';
+    } else {
+      var pct = Math.min(100, (curTotals.ca/target)*100);
+      var reached = curTotals.ca >= target;
+      body.innerHTML =
+        '<div class="kpi-value" style="font-size:1.3rem;">'+fmtEUR(curTotals.ca,0)+' <span style="color:var(--text-muted); font-size:0.85rem; font-weight:400;">/ '+fmtEUR(target,0)+'</span></div>' +
+        '<div class="goal-bar-track"><div class="goal-bar-fill" style="width:'+pct+'%; background:'+(reached?"var(--success)":"var(--accent)")+';"></div></div>' +
+        '<div class="kpi-sub">'+(reached ? '<span class="delta up">objectif atteint</span>' : fmtNum(pct,0)+'% de l\'objectif · reste '+fmtEUR(Math.max(0,target-curTotals.ca),0))+'</div>' +
+        '<button class="goal-edit-btn" id="goalSetBtn" style="margin-top:10px;">Modifier l\'objectif</button>' +
+        '<div class="goal-edit-row" id="goalEditRow" hidden>' +
+          '<input type="number" min="0" step="10" id="goalInput" value="'+target+'">' +
+          '<button class="btn btn-primary btn-sm" id="goalSaveBtn">OK</button>' +
+        '</div>';
+    }
+
+    document.getElementById("goalSetBtn").addEventListener("click", function(){
+      document.getElementById("goalEditRow").hidden = false;
+      document.getElementById("goalInput").focus();
+    });
+    document.getElementById("goalSaveBtn").addEventListener("click", async function(){
+      var v = parseFloat(document.getElementById("goalInput").value);
+      if(isNaN(v) || v < 0) return;
+      await withUndo("apercu", "Objectif du mois modifié", {settings:["goal"]}, function(){
+        return Store.saveGoal(v);
+      });
+      toast("Objectif mis à jour");
+    });
+  }
+
+  function renderTopPieces(){
+    var withMargin = state.sales.map(function(s){
+      return Object.assign({}, s, {margin: (s.price||0)-(s.cost||0)});
+    }).sort(function(a,b){ return b.margin - a.margin; }).slice(0,5);
+
+    var el = document.getElementById("topPieces");
+    if(withMargin.length === 0){
+      el.innerHTML = '<div class="empty-note">Aucune vente enregistrée pour l\'instant.</div>';
+      return;
+    }
+    var maxMargin = withMargin[0].margin || 1;
+    el.innerHTML = withMargin.map(function(s, i){
+      var pct = Math.max(4, (s.margin/maxMargin)*100);
+      return '<li class="rank-item">' +
+        '<span class="rank-num">'+(i+1)+'</span>' +
+        '<span class="rank-body"><span class="rank-name">'+escapeHtml(s.product)+(s.ref?' <span class="cell-muted">('+escapeHtml(s.ref)+')</span>':'')+'</span>' +
+        '<div class="rank-bar-track"><div class="rank-bar-fill" style="width:'+pct+'%;"></div></div></span>' +
+        '<span class="rank-value">+'+fmtEUR(s.margin,0)+'</span>' +
+      '</li>';
+    }).join("");
+  }
+
+  /* ============================================================
+     RENDER: STOCK
+  ============================================================ */
+  function renderStock(){
+    var total = state.stock.length;
+    var weight = state.stock.reduce(function(a,s){ return a+(s.weight||0); }, 0);
+    var cost = state.stock.reduce(function(a,s){ return a+(s.cost||0); }, 0);
+    var resale90 = state.stock.reduce(function(a,s){ return a+(s.weight||0)*90; }, 0);
+    var resale100 = state.stock.reduce(function(a,s){ return a+(s.weight||0)*100; }, 0);
+    var resale110 = state.stock.reduce(function(a,s){ return a+(s.weight||0)*110; }, 0);
+    var resale120 = state.stock.reduce(function(a,s){ return a+(s.weight||0)*120; }, 0);
+    var resale130 = state.stock.reduce(function(a,s){ return a+(s.weight||0)*130; }, 0);
+
+    document.getElementById("stockKpis").innerHTML = [
+      {label:"Articles en stock", value: fmtNum(total,0)},
+      {label:"Poids total", value: fmtNum(weight,1)+" g"},
+      {label:"Valeur d'achat", value: fmtEUR(cost,0)},
+      {label:"Revente est. à 90€/g", value: fmtEUR(resale90,0)},
+      {label:"Revente est. à 100€/g", value: fmtEUR(resale100,0)},
+      {label:"Revente est. à 110€/g", value: fmtEUR(resale110,0)},
+      {label:"Revente est. à 120€/g", value: fmtEUR(resale120,0)},
+      {label:"Revente est. à 130€/g", value: fmtEUR(resale130,0)}
+    ].map(function(k){
+      return '<div class="kpi-card"><div class="kpi-label">'+k.label+'</div><div class="kpi-value">'+k.value+'</div>' + (k.sub?'<div class="kpi-sub">'+k.sub+'</div>':'') + '</div>';
+    }).join("");
+
+    var list = state.stock.slice();
+    var q = state.stockSearch.trim().toLowerCase();
+    if(q){
+      // Le poids est filtré en strict (égalité exacte) quand la recherche est un nombre,
+      // pour ne pas remonter "12" ou "1,20" quand on cherche "120" par exemple.
+      var qIsNum = /^[0-9]+([.,][0-9]+)?$/.test(q);
+      var qNum = qIsNum ? parseFloat(q.replace(",", ".")) : null;
+      list = list.filter(function(s){
+        var costStr = (s.cost !== null && s.cost !== undefined) ? String(s.cost) : "";
+        var costStrComma = costStr.replace(".", ",");
+        var weightMatch = qIsNum && s.weight !== null && s.weight !== undefined && Math.abs(s.weight - qNum) < 0.0001;
+        return (s.product||"").toLowerCase().indexOf(q) > -1 ||
+          (s.ref||"").toLowerCase().indexOf(q) > -1 ||
+          weightMatch ||
+          costStr.indexOf(q) > -1 || costStrComma.indexOf(q) > -1;
+      });
+    }
+    var sortFns = {
+      "cost-desc": function(a,b){ return (b.cost||0)-(a.cost||0); },
+      "cost-asc": function(a,b){ return (a.cost||0)-(b.cost||0); },
+      "weight-desc": function(a,b){ return (b.weight||0)-(a.weight||0); },
+      "name-asc": function(a,b){ return (a.product||"").localeCompare(b.product||""); },
+      "ref-asc": function(a,b){ return (a.ref||"").localeCompare(b.ref||"", undefined, {numeric:true}); }
+    };
+    list.sort(sortFns[state.stockSort] || sortFns["cost-desc"]);
+
+    document.getElementById("stockCountHint").textContent = list.length + " / " + total + " article" + (total>1?"s":"");
+
+    var body = document.getElementById("stockTableBody");
+    if(list.length === 0){
+      body.innerHTML = '<tr><td colspan="9"><div class="empty-note">'+(total===0 ? "Le stock est vide — ajoutez une première pièce ci-dessus." : "Aucun article ne correspond à la recherche.")+'</div></td></tr>';
+      return;
+    }
+    body.innerHTML = list.map(function(s){
+      var isConfirm = state.confirmDeleteStockId === s.id;
+      var actions = isConfirm
+        ? '<div class="confirm-row"><span class="confirm-text">Supprimer ?</span>' +
+          '<button class="icon-btn danger" data-act="stock-del-yes" data-id="'+s.id+'" title="Confirmer">✓</button>' +
+          '<button class="icon-btn" data-act="stock-del-no" title="Annuler">✕</button></div>'
+        : '<div class="cell-actions">' +
+          '<button class="icon-btn" data-act="stock-edit" data-id="'+s.id+'" title="Modifier">✎</button>' +
+          '<button class="btn btn-ghost btn-sm" data-act="stock-sold" data-id="'+s.id+'">Vendu</button>' +
+          '<button class="icon-btn danger" data-act="stock-del" data-id="'+s.id+'" title="Supprimer">🗑</button></div>';
+      return '<tr>' +
+        '<td class="cell-muted">'+escapeHtml(s.ref||"—")+'</td>' +
+        '<td>'+escapeHtml(s.product)+'</td>' +
+        '<td class="num">'+fmtNum(s.weight,2)+'</td>' +
+        '<td class="num">'+fmtEUR(s.cost)+'</td>' +
+        '<td class="num cell-muted">'+fmtEUR((s.weight||0)*100,0)+'</td>' +
+        '<td class="num cell-muted">'+fmtEUR((s.weight||0)*110,0)+'</td>' +
+        '<td class="num cell-muted">'+fmtEUR((s.weight||0)*120,0)+'</td>' +
+        '<td class="num cell-muted">'+fmtEUR((s.weight||0)*130,0)+'</td>' +
+        '<td>'+actions+'</td>' +
+      '</tr>';
+    }).join("");
+  }
+
+  document.getElementById("stockSearch").addEventListener("input", function(e){
+    state.stockSearch = e.target.value; renderStock();
+  });
+  document.getElementById("stockSort").addEventListener("change", function(e){
+    state.stockSort = e.target.value; renderStock();
+  });
+
+  document.getElementById("stockTableBody").addEventListener("click", function(e){
+    var btn = e.target.closest("button");
+    if(!btn) return;
+    var act = btn.getAttribute("data-act");
+    var id = btn.getAttribute("data-id");
+    if(act === "stock-del"){ state.confirmDeleteStockId = id; renderStock(); }
+    else if(act === "stock-del-no"){ state.confirmDeleteStockId = null; renderStock(); }
+    else if(act === "stock-del-yes"){
+      state.confirmDeleteStockId = null;
+      var item = state.stock.find(function(s){ return s.id === id; });
+      withUndo("stock", "Suppression du stock — " + (item ? item.product : ""), {collections:["stock"]}, function(){
+        return Store.deleteStock(id);
+      }).then(function(){ toast("Article supprimé du stock"); });
+    } else if(act === "stock-sold"){
+      var item = state.stock.find(function(s){ return s.id === id; });
+      if(!item) return;
+      state.pendingStockDelete = id;
+      document.getElementById("svRef").value = item.ref || "";
+      document.getElementById("svProduct").value = item.product || "";
+      document.getElementById("svWeight").value = item.weight || "";
+      document.getElementById("svCost").value = item.cost || "";
+      document.getElementById("svPrice").value = "";
+      document.getElementById("svDate").value = new Date().toISOString().slice(0,10);
+      document.querySelector('.tab[data-tab="ventes"]').click();
+      document.getElementById("svPrice").focus();
+      toast("Complétez le prix de vente pour finaliser");
+    } else if(act === "stock-edit"){
+      var editItem = state.stock.find(function(s){ return s.id === id; });
+      if(!editItem) return;
+      state.editingStockId = id;
+      document.getElementById("stRef").value = editItem.ref || "";
+      document.getElementById("stProduct").value = editItem.product || "";
+      document.getElementById("stWeight").value = editItem.weight || "";
+      document.getElementById("stCost").value = editItem.cost || "";
+      document.getElementById("stockFormTitle").textContent = "Modifier la pièce";
+      document.getElementById("stockSubmitBtn").textContent = "Mettre à jour";
+      document.getElementById("stockCancelBtn").hidden = false;
+      document.getElementById("stockForm").scrollIntoView({behavior:"smooth", block:"center"});
+    }
+  });
+
+  function resetStockForm(){
+    state.editingStockId = null;
+    document.getElementById("stockForm").reset();
+    document.getElementById("stockFormTitle").textContent = "Ajouter une pièce en stock";
+    document.getElementById("stockSubmitBtn").textContent = "Ajouter au stock";
+    document.getElementById("stockCancelBtn").hidden = true;
+  }
+  document.getElementById("stockCancelBtn").addEventListener("click", function(){
+    resetStockForm();
+  });
+
+  document.getElementById("stockForm").addEventListener("submit", async function(e){
+    e.preventDefault();
+    var data = {
+      ref: document.getElementById("stRef").value.trim(),
+      product: document.getElementById("stProduct").value.trim(),
+      weight: parseFloat(document.getElementById("stWeight").value) || 0,
+      cost: parseFloat(document.getElementById("stCost").value) || 0
+    };
+    if(!data.product) return;
+
+    if(state.editingStockId){
+      var stockId = state.editingStockId;
+      await withUndo("stock", "Modification du stock — " + data.product, {collections:["stock"]}, function(){
+        return Store.updateStock(stockId, data);
+      });
+      toast("Pièce mise à jour");
+    } else {
+      await withUndo("stock", "Ajout au stock — " + data.product, {collections:["stock"]}, function(){
+        return Store.addStock(data);
+      });
+      toast("Pièce ajoutée au stock");
+    }
+    resetStockForm();
+  });
+
+  /* ============================================================
+     RENDER: VENTES
+  ============================================================ */
+  function renderVentes(){
+    var byMonth = salesByMonth();
+    var months = Object.keys(byMonth).filter(function(m){ return m !== "inconnu"; }).sort().reverse();
+
+    // KPIs are always scoped to ONE month — the selected chip, or the current
+    // month by default — never the lifetime total (that lives in Aperçu only).
+    var periodKey = state.salesMonthFilter !== "all" ? state.salesMonthFilter : todayKey();
+    var periodSales = byMonth[periodKey] || [];
+    var totals = monthTotals(periodSales);
+    var avgTicket = totals.count ? totals.ca/totals.count : 0;
+    var margePct = totals.ca ? (totals.marge/totals.ca)*100 : 0;
+    var periodLabel = fmtMonth(periodKey);
+    var periodWeight = periodSales.reduce(function(a,s){ return a + (s.weight||0); }, 0);
+    var avgGramPrice = periodWeight ? totals.ca/periodWeight : 0;
+
+    document.getElementById("ventesKpis").innerHTML = [
+      {label:"Chiffre d'affaires — "+periodLabel, value: fmtEUR(totals.ca,0)},
+      {label:"Marge — "+periodLabel, value: fmtEUR(totals.marge,0), sub: fmtNum(margePct,1)+"% de marge"},
+      {label:"Ventes — "+periodLabel, value: fmtNum(totals.count,0)},
+      {label:"Panier moyen — "+periodLabel, value: fmtEUR(avgTicket,0)},
+      {label:"Prix moyen au gramme (18k) — "+periodLabel, value: fmtEUR(avgGramPrice,2)+" /g", sub: "CA du mois ÷ poids total vendu"}
+    ].map(function(k){
+      return '<div class="kpi-card"><div class="kpi-label">'+k.label+'</div><div class="kpi-value">'+k.value+'</div>' + (k.sub?'<div class="kpi-sub">'+k.sub+'</div>':'') + '</div>';
+    }).join("");
+    var chips = ['<button class="chip'+(state.salesMonthFilter==="all"?" active":"")+'" data-month="all">Tout</button>']
+      .concat(months.map(function(m){
+        return '<button class="chip'+(state.salesMonthFilter===m?" active":"")+'" data-month="'+m+'">'+fmtMonth(m)+'</button>';
+      }));
+    document.getElementById("monthChips").innerHTML = chips.join("");
+
+    var list = state.sales.slice();
+    if(state.salesMonthFilter !== "all"){
+      list = list.filter(function(s){ return (s.month || monthKeyFromDate(s.date)) === state.salesMonthFilter; });
+    }
+    list.sort(function(a,b){
+      var da = a.date || (a.month ? a.month+"-01" : "0000-00-00");
+      var db = b.date || (b.month ? b.month+"-01" : "0000-00-00");
+      return db.localeCompare(da);
+    });
+
+    document.getElementById("salesCountHint").textContent = list.length + " / " + state.sales.length + " vente" + (state.sales.length>1?"s":"");
+
+    var body = document.getElementById("salesTableBody");
+    if(list.length === 0){
+      body.innerHTML = '<tr><td colspan="9"><div class="empty-note">Aucune vente enregistrée pour cette période.</div></td></tr>';
+      return;
+    }
+    body.innerHTML = list.map(function(s){
+      var margin = (s.price||0)-(s.cost||0);
+      var isConfirm = state.confirmDeleteSaleId === s.id;
+      var actions = isConfirm
+        ? '<div class="confirm-row"><span class="confirm-text">Supprimer ?</span>' +
+          '<button class="icon-btn danger" data-act="sale-del-yes" data-id="'+s.id+'" title="Confirmer">✓</button>' +
+          '<button class="icon-btn" data-act="sale-del-no" title="Annuler">✕</button></div>'
+        : '<div class="cell-actions">' +
+          '<button class="icon-btn" data-act="sale-edit" data-id="'+s.id+'" title="Modifier">✎</button>' +
+          '<button class="icon-btn danger" data-act="sale-del" data-id="'+s.id+'" title="Supprimer">🗑</button></div>';
+      var acc = s.accountId ? state.vintedAccounts.find(function(a){ return a.id === s.accountId; }) : null;
+      var accCell = acc ? (acc.num ? "N°"+acc.num+" — " : "") + escapeHtml(acc.name) : (s.accountId ? "—" : "");
+      return '<tr>' +
+        '<td class="cell-muted">'+(s.date ? fmtDate(s.date) : fmtMonth(s.month))+'</td>' +
+        '<td class="cell-muted">'+escapeHtml(s.ref||"—")+'</td>' +
+        '<td>'+escapeHtml(s.product)+'</td>' +
+        '<td class="num">'+fmtNum(s.weight,2)+'</td>' +
+        '<td class="num">'+fmtEUR(s.cost)+'</td>' +
+        '<td class="num">'+fmtEUR(s.price)+'</td>' +
+        '<td class="num" style="color:var(--success-strong); font-weight:600;">'+fmtEUR(margin)+'</td>' +
+        '<td class="cell-muted">'+accCell+'</td>' +
+        '<td>'+actions+'</td>' +
+      '</tr>';
+    }).join("");
+  }
+
+  document.getElementById("monthChips").addEventListener("click", function(e){
+    var btn = e.target.closest(".chip");
+    if(!btn) return;
+    state.salesMonthFilter = btn.getAttribute("data-month");
+    renderVentes();
+  });
+
+  document.getElementById("salesTableBody").addEventListener("click", function(e){
+    var btn = e.target.closest("button");
+    if(!btn) return;
+    var act = btn.getAttribute("data-act");
+    var id = btn.getAttribute("data-id");
+    if(act === "sale-del"){ state.confirmDeleteSaleId = id; renderVentes(); }
+    else if(act === "sale-del-no"){ state.confirmDeleteSaleId = null; renderVentes(); }
+    else if(act === "sale-del-yes"){
+      state.confirmDeleteSaleId = null;
+      var sale = state.sales.find(function(s){ return s.id === id; });
+      withUndo("ventes", "Suppression de la vente — " + (sale ? sale.product : ""), {collections:["sales","stock"]}, async function(){
+        if(sale){
+          // Deleting a sale undoes it — the piece goes back into stock
+          // rather than disappearing from the records entirely.
+          await Store.addStock({
+            ref: sale.ref || "",
+            product: sale.product || "",
+            weight: sale.weight || 0,
+            cost: sale.cost || 0
+          });
+        }
+        await Store.deleteSale(id);
+      }).then(function(){ toast("Vente supprimée — pièce remise en stock"); });
+    } else if(act === "sale-edit"){
+      var item = state.sales.find(function(s){ return s.id === id; });
+      if(!item) return;
+      state.editingSaleId = id;
+      document.getElementById("svRef").value = item.ref || "";
+      document.getElementById("svProduct").value = item.product || "";
+      document.getElementById("svWeight").value = item.weight || "";
+      document.getElementById("svCost").value = item.cost || "";
+      document.getElementById("svPrice").value = item.price || "";
+      document.getElementById("svDate").value = item.date || new Date().toISOString().slice(0,10);
+      var svAccSel = document.getElementById("svAccount");
+      svAccSel.value = item.accountId || "";
+      document.getElementById("svNewAccountWrap").hidden = svAccSel.value !== "__new__";
+      document.getElementById("salesFormTitle").textContent = "Modifier la vente";
+      document.getElementById("salesSubmitBtn").textContent = "Mettre à jour";
+      document.getElementById("salesCancelBtn").hidden = false;
+      document.getElementById("salesForm").scrollIntoView({behavior:"smooth", block:"center"});
+    }
+  });
+
+  document.getElementById("salesCancelBtn").addEventListener("click", function(){
+    resetSalesForm();
+  });
+  document.getElementById("svAccount").addEventListener("change", function(e){
+    document.getElementById("svNewAccountWrap").hidden = e.target.value !== "__new__";
+    if(e.target.value === "__new__") document.getElementById("svNewAccount").focus();
+  });
+  function resetSalesForm(){
+    state.editingSaleId = null;
+    state.pendingStockDelete = null;
+    document.getElementById("salesForm").reset();
+    document.getElementById("svDate").value = new Date().toISOString().slice(0,10);
+    document.getElementById("svAccount").value = "";
+    document.getElementById("svNewAccountWrap").hidden = true;
+    document.getElementById("salesFormTitle").textContent = "Enregistrer une vente";
+    document.getElementById("salesSubmitBtn").textContent = "Enregistrer la vente";
+    document.getElementById("salesCancelBtn").hidden = true;
+  }
+
+  document.getElementById("salesForm").addEventListener("submit", async function(e){
+    e.preventDefault();
+    var date = document.getElementById("svDate").value;
+    var accSel = document.getElementById("svAccount");
+    var accountId = accSel.value || null;
+    var newAccountName = null;
+    if(accountId === "__new__"){
+      newAccountName = document.getElementById("svNewAccount").value.trim();
+      if(!newAccountName){ document.getElementById("svNewAccount").focus(); return; }
+      accountId = "acc-" + newAccountName.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"") + "-" + Date.now().toString(36).slice(-4);
+    }
+    var data = {
+      ref: document.getElementById("svRef").value.trim(),
+      product: document.getElementById("svProduct").value.trim(),
+      weight: parseFloat(document.getElementById("svWeight").value) || 0,
+      cost: parseFloat(document.getElementById("svCost").value) || 0,
+      price: parseFloat(document.getElementById("svPrice").value) || 0,
+      date: date || null,
+      month: date ? date.slice(0,7) : todayKey(),
+      accountId: accountId
+    };
+    if(!data.product) return;
+
+    if(state.editingSaleId){
+      var saleId = state.editingSaleId;
+      await withUndo("ventes", "Modification de la vente — " + data.product, {collections:["sales"]}, function(){
+        return Store.updateSale(saleId, data);
+      });
+      toast("Vente mise à jour");
+    } else {
+      var pendingDelete = state.pendingStockDelete;
+      await withUndo("ventes", "Vente enregistrée — " + data.product, {collections:["sales","stock","vintedAccounts"]}, async function(){
+        if(newAccountName){ await Store.ensureNewAccount(accountId, newAccountName); }
+        await Store.addSale(data);
+        if(pendingDelete){ await Store.deleteStock(pendingDelete); }
+      });
+      toast("Vente enregistrée");
+    }
+    resetSalesForm();
+  });
+
+  /* ============================================================
+     RENDER: COMPTES VINTED
+  ============================================================ */
+  // A sale attributed to an account (svAccount) automatically counts toward that
+  // account/month's CA — it takes precedence over a manually-entered figure for
+  // that same month, so once sales are attributed (from septembre 2026 on) the
+  // "Mettre à jour un mois" form is only needed for corrections or older history.
+  function attributedSalesSum(accountId, monthKey){
+    var sum = 0, found = false;
+    state.sales.forEach(function(s){
+      if(s.accountId === accountId && (s.month || monthKeyFromDate(s.date)) === monthKey){
+        sum += (s.price||0); found = true;
+      }
+    });
+    return found ? sum : null;
+  }
+  function accountMonthCA(acc, monthKey){
+    var auto = attributedSalesSum(acc.id, monthKey);
+    return auto !== null ? auto : ((acc.ca && acc.ca[monthKey]) || 0);
+  }
+  function accountMonthHasValue(acc, monthKey){
+    if(attributedSalesSum(acc.id, monthKey) !== null) return true;
+    return !!(acc.ca && acc.ca[monthKey] !== undefined);
+  }
+  function accountMonthsSet(acc){
+    var set = {};
+    Object.keys(acc.ca || {}).forEach(function(mk){ set[mk] = true; });
+    state.sales.forEach(function(s){
+      if(s.accountId === acc.id){
+        var mk = s.month || monthKeyFromDate(s.date);
+        if(mk) set[mk] = true;
+      }
+    });
+    return set;
+  }
+  function accountYearTotal(acc, year){
+    var total = 0;
+    Object.keys(accountMonthsSet(acc)).forEach(function(mk){
+      if(mk.slice(0,4) === year) total += accountMonthCA(acc, mk);
+    });
+    return total;
+  }
+
+  function renderComptes(){
+    var year = todayKey().slice(0,4);
+    var threshold = (state.vintedThreshold && state.vintedThreshold.amount) || 0;
+
+    // ---- threshold editor ----
+    var tBody = document.getElementById("thresholdBody");
+    tBody.innerHTML =
+      '<div class="kpi-value" style="font-size:1.3rem;">'+(threshold ? fmtEUR(threshold,0) : "Non défini")+'</div>' +
+      '<button class="goal-edit-btn" id="thresholdSetBtn" style="margin-top:8px;">Modifier le seuil</button>' +
+      '<div class="goal-edit-row" id="thresholdEditRow" hidden>' +
+        '<input type="number" min="0" step="10" id="thresholdInput" value="'+(threshold||2000)+'">' +
+        '<button class="btn btn-primary btn-sm" id="thresholdSaveBtn">OK</button>' +
+      '</div>';
+    document.getElementById("thresholdSetBtn").addEventListener("click", function(){
+      document.getElementById("thresholdEditRow").hidden = false;
+      document.getElementById("thresholdInput").focus();
+    });
+    document.getElementById("thresholdSaveBtn").addEventListener("click", async function(){
+      var v = parseFloat(document.getElementById("thresholdInput").value);
+      if(isNaN(v) || v < 0) return;
+      await withUndo("comptes", "Seuil de vigilance modifié", {settings:["vintedThreshold"]}, function(){
+        return Store.saveThreshold(v);
+      });
+      toast("Seuil mis à jour");
+    });
+
+    // ---- account select in the form ----
+    var accSelect = document.getElementById("cpAccount");
+    var prevSelected = accSelect.value;
+    var accounts = state.vintedAccounts.slice().sort(function(a,b){
+      if(a.num && b.num) return a.num - b.num;
+      if(a.num) return -1;
+      if(b.num) return 1;
+      return (a.name||"").localeCompare(b.name||"");
+    });
+    accSelect.innerHTML = accounts.map(function(a){ return '<option value="'+a.id+'">'+(a.num?("N°"+a.num+" — "):"")+escapeHtml(a.name)+'</option>'; }).join("")
+      + '<option value="__new__">+ Nouveau compte…</option>';
+    if(accounts.some(function(a){ return a.id === prevSelected; })) accSelect.value = prevSelected;
+    document.getElementById("cpNewNameWrap").hidden = accSelect.value !== "__new__" && accounts.length > 0;
+
+    // ---- account number editor ----
+    var numBody = document.getElementById("accountNumBody");
+    if(accounts.length === 0){
+      numBody.innerHTML = '<div class="hint">Aucun compte pour l\'instant.</div>';
+    } else {
+      numBody.innerHTML = '<div class="field-grid" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr));">' +
+        accounts.map(function(a){
+          return '<div><label>'+escapeHtml(a.name)+'</label>' +
+            '<input type="number" min="1" step="1" class="acc-num-input" data-id="'+a.id+'" value="'+(a.num||"")+'" placeholder="N°"></div>';
+        }).join("") + '</div>';
+      numBody.querySelectorAll(".acc-num-input").forEach(function(inp){
+        inp.addEventListener("change", async function(){
+          var v = parseInt(inp.value, 10);
+          if(isNaN(v) || v < 1) return;
+          var accId = inp.getAttribute("data-id");
+          var accObj = state.vintedAccounts.find(function(a){ return a.id === accId; });
+          await withUndo("comptes", "Numéro de compte modifié — " + (accObj ? accObj.name : ""), {collections:["vintedAccounts"]}, function(){
+            return Store.saveAccountNum(accId, v);
+          });
+          toast("Numéro de compte mis à jour");
+        });
+      });
+    }
+
+    // ---- account select in the sales form (Ventes tab) ----
+    var svSelect = document.getElementById("svAccount");
+    if(svSelect){
+      var svPrev = svSelect.value;
+      svSelect.innerHTML = '<option value="">— (hors Vinted / non attribué)</option>' +
+        accounts.map(function(a){ return '<option value="'+a.id+'">'+(a.num?("N°"+a.num+" — "):"")+escapeHtml(a.name)+'</option>'; }).join("") +
+        '<option value="__new__">+ Nouveau compte…</option>';
+      if(svPrev && (svPrev === "__new__" || accounts.some(function(a){ return a.id === svPrev; }))) svSelect.value = svPrev;
+      var svNewWrap = document.getElementById("svNewAccountWrap");
+      if(svNewWrap) svNewWrap.hidden = svSelect.value !== "__new__";
+    }
+
+    // ---- KPI cards: total + per account YTD vs threshold ----
+    var totalYear = accounts.reduce(function(a,acc){ return a + accountYearTotal(acc, year); }, 0);
+    var kpis = [{label:"CA cumulé "+year+" — tous comptes", value: fmtEUR(totalYear,0), sub: accounts.length+" compte"+(accounts.length>1?"s":"")}]
+      .concat(accounts.map(function(acc){
+        var t = accountYearTotal(acc, year);
+        var pct = threshold ? Math.min(100,(t/threshold)*100) : 0;
+        var over = threshold && t >= threshold;
+        var near = threshold && !over && t >= threshold*0.8;
+        var sub = threshold
+          ? '<div class="goal-bar-track" style="margin:6px 0 2px;"><div class="goal-bar-fill" style="width:'+pct+'%; background:'+(over?"var(--danger)":near?"var(--warning)":"var(--accent)")+';"></div></div>' +
+            '<span style="font-size:0.78rem; color:'+(over?"var(--danger-strong)":near?"var(--warning)":"var(--text-muted)")+';">'+fmtNum(pct,0)+'% du seuil'+(over?" — dépassé":"")+'</span>'
+          : '';
+        return {label: acc.name, value: fmtEUR(t,0), sub: sub, raw:true};
+      }));
+    document.getElementById("comptesKpis").innerHTML = kpis.map(function(k){
+      return '<div class="kpi-card"><div class="kpi-label">'+escapeHtml(k.label)+'</div><div class="kpi-value">'+k.value+'</div>' + (k.sub?'<div class="kpi-sub">'+(k.raw?k.sub:escapeHtml(k.sub))+'</div>':'') + '</div>';
+    }).join("");
+
+    // ---- month-by-month table ----
+    var monthSet = {};
+    accounts.forEach(function(acc){ Object.keys(accountMonthsSet(acc)).forEach(function(mk){ monthSet[mk] = true; }); });
+    var months = Object.keys(monthSet).sort();
+
+    var head = document.getElementById("comptesTableHead");
+    var body = document.getElementById("comptesTableBody");
+    if(accounts.length === 0){
+      head.innerHTML = "";
+      body.innerHTML = '<tr><td><div class="empty-note">Aucun compte enregistré — ajoutez un mois ci-dessus pour créer un compte.</div></td></tr>';
+      return;
+    }
+    head.innerHTML = '<th>Compte</th>' + months.map(function(m){ return '<th class="num">'+fmtMonth(m).split(" ")[0].slice(0,3)+" "+m.slice(2,4)+'</th>'; }).join("") + '<th class="num">Total '+year+'</th>';
+    body.innerHTML = accounts.map(function(acc){
+      var t = accountYearTotal(acc, year);
+      var over = threshold && t >= threshold;
+      return '<tr><td>'+(acc.num?('<span class="badge">N°'+acc.num+'</span> '):"")+escapeHtml(acc.name)+'</td>' +
+        months.map(function(m){
+          var has = accountMonthHasValue(acc, m);
+          var auto = attributedSalesSum(acc.id, m) !== null;
+          var editBtn = (has && !auto)
+            ? ' <button class="icon-btn" data-act="cpmonth-edit" data-acc="'+acc.id+'" data-month="'+m+'" style="width:18px; height:18px; padding:0; font-size:10px; vertical-align:middle;" title="Modifier">✎</button>'
+            : '';
+          return '<td class="num'+(has ? '' : ' cell-muted')+'" title="'+(auto?"Calculé depuis les ventes attribuées":"Saisi manuellement")+'">'+(has ? fmtEUR(accountMonthCA(acc,m),0) : "—")+editBtn+'</td>';
+        }).join("") +
+        '<td class="num" style="font-weight:600; color:'+(over?"var(--danger-strong)":"var(--text)")+';">'+fmtEUR(t,0)+'</td></tr>';
+    }).join("");
+
+    // ---- total row: sum across all accounts, per month + grand total ----
+    var grandTotal = accounts.reduce(function(a,acc){ return a + accountYearTotal(acc, year); }, 0);
+    body.innerHTML += '<tr style="border-top:2px solid var(--border-strong,#333);">' +
+      '<td style="font-weight:700;">Total — tous comptes</td>' +
+      months.map(function(m){
+        var monthSum = accounts.reduce(function(a,acc){
+          return a + (accountMonthHasValue(acc, m) ? (accountMonthCA(acc, m) || 0) : 0);
+        }, 0);
+        return '<td class="num" style="font-weight:700;">'+(monthSum ? fmtEUR(monthSum,0) : "—")+'</td>';
+      }).join("") +
+      '<td class="num" style="font-weight:700; color:var(--accent);">'+fmtEUR(grandTotal,0)+'</td></tr>';
+  }
+
+  document.getElementById("comptesTableBody").addEventListener("click", function(e){
+    var btn = e.target.closest("button");
+    if(!btn || btn.getAttribute("data-act") !== "cpmonth-edit") return;
+    var accId = btn.getAttribute("data-acc");
+    var mk = btn.getAttribute("data-month");
+    var acc = state.vintedAccounts.find(function(a){ return a.id === accId; });
+    if(!acc) return;
+    document.getElementById("cpAccount").value = accId;
+    document.getElementById("cpNewNameWrap").hidden = true;
+    document.getElementById("cpMonth").value = mk;
+    document.getElementById("cpAmount").value = accountMonthCA(acc, mk);
+    document.getElementById("compteForm").scrollIntoView({behavior:"smooth", block:"center"});
+    document.getElementById("cpAmount").focus();
+  });
+
+  document.getElementById("cpAccount").addEventListener("change", function(e){
+    document.getElementById("cpNewNameWrap").hidden = e.target.value !== "__new__";
+    if(e.target.value === "__new__") document.getElementById("cpNewName").focus();
+  });
+
+  document.getElementById("compteForm").addEventListener("submit", async function(e){
+    e.preventDefault();
+    var sel = document.getElementById("cpAccount");
+    var monthVal = document.getElementById("cpMonth").value; // "YYYY-MM"
+    var amount = parseFloat(document.getElementById("cpAmount").value);
+    if(!monthVal || isNaN(amount)) return;
+
+    var accountId, accountName;
+    if(sel.value === "__new__" || state.vintedAccounts.length === 0){
+      var name = document.getElementById("cpNewName").value.trim();
+      if(!name){ document.getElementById("cpNewName").focus(); return; }
+      accountName = name;
+      accountId = "acc-" + accountName.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"") + "-" + Date.now().toString(36).slice(-4);
+    } else {
+      var acc = state.vintedAccounts.find(function(a){ return a.id === sel.value; });
+      accountId = sel.value;
+      accountName = acc ? acc.name : sel.value;
+    }
+    await withUndo("comptes", "CA du compte mis à jour — " + accountName + " (" + fmtMonth(monthVal) + ")", {collections:["vintedAccounts"]}, function(){
+      return Store.saveAccountMonth(accountId, accountName, monthVal, amount);
+    });
+    document.getElementById("cpAmount").value = "";
+    document.getElementById("cpNewName").value = "";
+    toast("CA du compte mis à jour");
+  });
+
+  /* ============================================================
+     RENDER: OR À FONDRE
+  ============================================================ */
+  // Conversion carat -> équivalent 18k : poids18k = poids_origine * (carat/18).
+  // Vérifié contre la feuille source (ex. 8k 7,01g -> 3,115555556g ; 14K 31,75g -> 24,69444444g).
+  function caratNumber(caratStr){
+    if(!caratStr) return null;
+    var m = String(caratStr).match(/(\d+(?:[.,]\d+)?)/);
+    if(!m) return null;
+    return parseFloat(m[1].replace(",","."));
+  }
+  function computeWeight18k(weightOrigin, caratStr){
+    var k = caratNumber(caratStr);
+    if(!k || !weightOrigin) return null;
+    return weightOrigin * (k/18);
+  }
+  // Poids 18k affiché : la valeur stockée si elle existe, sinon calculée à la volée
+  // à partir du carat + poids d'origine (utile pour les lots historiques importés
+  // sans conversion, ou tout lot dont le carat a été précisé depuis).
+  function effectiveWeight18k(l){
+    if(l.weight18k !== null && l.weight18k !== undefined) return l.weight18k;
+    return computeWeight18k(l.weightOrigin, l.carat);
+  }
+  function isMixedCarat(caratStr){
+    return !!(caratStr && /\//.test(caratStr));
+  }
+
+  function renderFonte(){
+    // Cet onglet a son propre CA et son propre bénéfice, calculés uniquement à
+    // partir des lots vendus ici — jamais mélangés au CA global (Aperçu / Ventes),
+    // qui ne lit que la collection "sales" (bijoux revendus en l'état).
+    var lots = state.meltLots.slice();
+    var totalWeight18k = lots.reduce(function(a,l){ return a + (effectiveWeight18k(l)||0); }, 0);
+    var totalCost = lots.reduce(function(a,l){ return a + (l.cost||0); }, 0);
+    var soldLots = lots.filter(function(l){ return l.sold; });
+    var pendingLots = lots.filter(function(l){ return !l.sold; });
+    var pending = pendingLots.length;
+    var fonteCA = soldLots.reduce(function(a,l){ return a + (l.salePrice||0); }, 0);
+    var fonteBenefice = soldLots.reduce(function(a,l){ return a + ((l.salePrice||0) - (l.cost||0)); }, 0);
+    var dhCaTotal = state.meltDhSales.reduce(function(a,m){ return a + (m.caEur||0); }, 0);
+    var dhMontantTotal = state.meltDhSales.reduce(function(a,m){ return a + (m.weightSold && m.pricePerGramDh ? m.weightSold*m.pricePerGramDh : (m.caEur||0)*DH_RATE); }, 0);
+
+    // ---- cours de l'or 18k : éditeur + valeur estimée des lots en attente ----
+    var meltRate = (state.meltRate18k && state.meltRate18k.amount) || 0;
+    var pendingWeight18k = pendingLots.reduce(function(a,l){ return a + (effectiveWeight18k(l)||0); }, 0);
+    var pendingValueEstimate = pendingWeight18k * meltRate;
+
+    var rateBody = document.getElementById("meltRateBody");
+    rateBody.innerHTML =
+      '<div class="kpi-value" style="font-size:1.3rem;">'+(meltRate ? fmtEUR(meltRate,2)+"/g" : "Non défini")+'</div>' +
+      '<button class="goal-edit-btn" id="meltRateSetBtn" style="margin-top:8px;">'+(meltRate?"Modifier le cours":"Définir le cours")+'</button>' +
+      '<div class="goal-edit-row" id="meltRateEditRow" hidden>' +
+        '<input type="number" min="0" step="0.5" id="meltRateInput" value="'+(meltRate||60)+'">' +
+        '<button class="btn btn-primary btn-sm" id="meltRateSaveBtn">OK</button>' +
+      '</div>';
+    document.getElementById("meltRateSetBtn").addEventListener("click", function(){
+      document.getElementById("meltRateEditRow").hidden = false;
+      document.getElementById("meltRateInput").focus();
+    });
+    document.getElementById("meltRateSaveBtn").addEventListener("click", async function(){
+      var v = parseFloat(document.getElementById("meltRateInput").value);
+      if(isNaN(v) || v < 0) return;
+      await withUndo("fonte", "Cours de l'or 18k modifié", {settings:["meltRate18k"]}, function(){
+        return Store.saveMeltRate18k(v);
+      });
+      toast("Cours mis à jour");
+    });
+
+    var soldWeight18k = soldLots.reduce(function(a,l){ return a + (effectiveWeight18k(l)||0); }, 0);
+
+    document.getElementById("fonteKpis").innerHTML = [
+      {label:"Lots réservés à la fonte", value: fmtNum(lots.length,0), sub: pending+" en attente · "+soldLots.length+" vendu"+(soldLots.length>1?"s":"")},
+      {label:"Poids total éq. 18k", value: fmtNum(totalWeight18k,2)+" g", sub: fmtNum(pendingWeight18k,2)+" g en attente · "+fmtNum(soldWeight18k,2)+" g vendu"+(soldLots.length>1?"s":"")},
+      {label:"Valeur d'achat totale", value: fmtEUR(totalCost,0)},
+      {label:"Valeur estimée (18k) — lots en attente", value: meltRate ? fmtEUR(pendingValueEstimate,0) : "—", sub: meltRate ? (fmtNum(pendingWeight18k,2)+" g × "+fmtEUR(meltRate,2)+"/g") : "définissez le cours de l'or 18k ci-dessous"},
+      {label:"CA — lots vendus", value: fmtEUR(fonteCA,0), sub:"propre à cet onglet, hors CA global"},
+      {label:"Bénéfice — lots vendus", value: fmtEUR(fonteBenefice,0), sub:"propre à cet onglet, hors marge globale"},
+      {label:"CA — ventes en Dh (converties)", value: fmtEUR(dhCaTotal,0), sub: fmtNum(dhMontantTotal,0)+" DH · 1 € = 10,65 DH · hors CA global"}
+    ].map(function(k){
+      return '<div class="kpi-card"><div class="kpi-label">'+k.label+'</div><div class="kpi-value">'+k.value+'</div>' + (k.sub?'<div class="kpi-sub">'+k.sub+'</div>':'') + '</div>';
+    }).join("");
+
+    document.getElementById("fonteCountHint").textContent = lots.length + " lot" + (lots.length>1?"s":"");
+
+    var body = document.getElementById("fonteTableBody");
+    if(lots.length === 0){
+      body.innerHTML = '<tr><td colspan="8"><div class="empty-note">Aucun lot enregistré — ajoutez-en un ci-dessus.</div></td></tr>';
+      return;
+    }
+    body.innerHTML = lots.map(function(l){
+      var isConfirm = state.confirmDeleteMeltId === l.id;
+      var w18k = effectiveWeight18k(l);
+      var wasAuto = (l.weight18k === null || l.weight18k === undefined) && w18k !== null;
+      var mixed = isMixedCarat(l.carat);
+      var missing = !l.weightOrigin || !l.cost;
+      var benefice = l.sold ? (l.salePrice||0) - (l.cost||0) : null;
+      var statusBadge = l.sold
+        ? '<span class="delta up">vendu'+(l.salePrice?" · "+fmtEUR(l.salePrice,0):"")+'</span>'
+        : (missing ? '<span class="delta down">données à compléter</span>' : '<span class="delta flat">en attente</span>');
+      var actions = isConfirm
+        ? '<div class="confirm-row"><span class="confirm-text">Supprimer ?</span>' +
+          '<button class="icon-btn danger" data-act="melt-del-yes" data-id="'+l.id+'" title="Confirmer">✓</button>' +
+          '<button class="icon-btn" data-act="melt-del-no" title="Annuler">✕</button></div>'
+        : '<div class="cell-actions">' +
+          '<button class="icon-btn" data-act="melt-edit" data-id="'+l.id+'" title="Modifier">✎</button>' +
+          (l.sold ? '' : '<button class="btn btn-ghost btn-sm" data-act="melt-sold" data-id="'+l.id+'">Marquer vendu</button>') +
+          '<button class="icon-btn danger" data-act="melt-del" data-id="'+l.id+'" title="Supprimer">🗑</button></div>';
+      var w18kCell = w18k
+        ? fmtNum(w18k,2) + (wasAuto ? ' <span class="badge" title="'+(mixed?"Carat mixte — conversion approximative basée sur le premier carat indiqué":"Converti automatiquement depuis le carat d’origine")+'">'+(mixed?"≈ auto":"auto")+'</span>' : '')
+        : "—";
+      return '<tr>' +
+        '<td>'+escapeHtml(l.carat||"—")+'</td>' +
+        '<td class="num">'+(l.weightOrigin?fmtNum(l.weightOrigin,2):"—")+'</td>' +
+        '<td class="num">'+w18kCell+'</td>' +
+        '<td class="num">'+(l.cost?fmtEUR(l.cost,0):"—")+'</td>' +
+        '<td class="num">'+(l.salePrice?fmtEUR(l.salePrice,0):"—")+'</td>' +
+        '<td class="num" style="'+(benefice!==null?"color:var(--success-strong); font-weight:600;":"")+'">'+(benefice!==null?fmtEUR(benefice,0):"—")+'</td>' +
+        '<td>'+statusBadge+'</td>' +
+        '<td>'+actions+'</td>' +
+      '</tr>';
+    }).join("");
+  }
+
+  // Auto-calcule le poids éq. 18k dès que carat + poids d'origine sont renseignés
+  // (poids18k = poids_origine * carat/18) — reste modifiable manuellement (utile
+  // pour un carat mixte, ex. "9k/8k").
+  function liveComputeWeight18k(){
+    var caratVal = document.getElementById("flCarat").value.trim();
+    var weightVal = parseFloat(document.getElementById("flWeight").value);
+    var w18kInput = document.getElementById("flWeight18k");
+    if(w18kInput.dataset.userEdited === "1") return;
+    var computed = computeWeight18k(weightVal, caratVal);
+    w18kInput.value = computed !== null ? (Math.round(computed*1e6)/1e6) : "";
+  }
+  document.getElementById("flCarat").addEventListener("input", liveComputeWeight18k);
+  document.getElementById("flWeight").addEventListener("input", liveComputeWeight18k);
+  document.getElementById("flWeight18k").addEventListener("input", function(e){
+    e.target.dataset.userEdited = "1";
+  });
+
+  function resetFonteForm(){
+    state.editingMeltId = null;
+    document.getElementById("fonteForm").reset();
+    document.getElementById("flWeight18k").dataset.userEdited = "0";
+    document.getElementById("fonteFormTitle").textContent = "Ajouter un lot";
+    document.getElementById("fonteSubmitBtn").textContent = "Ajouter le lot";
+    document.getElementById("fonteCancelBtn").hidden = true;
+  }
+  document.getElementById("fonteCancelBtn").addEventListener("click", function(){
+    resetFonteForm();
+  });
+
+  document.getElementById("fonteForm").addEventListener("submit", async function(e){
+    e.preventDefault();
+    var carat = document.getElementById("flCarat").value.trim();
+    var weightOrigin = parseFloat(document.getElementById("flWeight").value) || null;
+    var weight18k = parseFloat(document.getElementById("flWeight18k").value) || null;
+    var cost = parseFloat(document.getElementById("flCost").value) || null;
+    if(!carat) return;
+
+    if(state.editingMeltId){
+      var lotId = state.editingMeltId;
+      var existing = state.meltLots.find(function(l){ return l.id === lotId; }) || {};
+      var data = {
+        carat: carat, weightOrigin: weightOrigin, weight18k: weight18k, cost: cost,
+        sold: existing.sold || false, salePrice: existing.salePrice != null ? existing.salePrice : null
+      };
+      await withUndo("fonte", "Modification du lot — " + carat, {collections:["meltLots"]}, function(){
+        return Store.updateMeltLot(lotId, data);
+      });
+      toast("Lot mis à jour");
+    } else {
+      // Adding a jewel doesn't start a new row — it accumulates into the
+      // existing, not-yet-sold lot of the same carat (poids et prix
+      // s'additionnent). Once a carat's lot is marked vendu, that batch is
+      // gone to the fonderie, so the next addition of the same carat opens
+      // a fresh lot rather than reopening the sold one.
+      var normCarat = carat.trim().toLowerCase();
+      var existingLot = state.meltLots.find(function(l){
+        return !l.sold && (l.carat||"").trim().toLowerCase() === normCarat;
+      });
+      if(existingLot){
+        var mergedWeightOrigin = (existingLot.weightOrigin||0) + (weightOrigin||0);
+        var mergedCost = (existingLot.cost||0) + (cost||0);
+        var mergedData = {
+          carat: existingLot.carat,
+          weightOrigin: mergedWeightOrigin || null,
+          weight18k: computeWeight18k(mergedWeightOrigin, existingLot.carat),
+          cost: mergedCost || null,
+          sold: false, salePrice: null
+        };
+        await withUndo("fonte", "Ajout cumulé au lot " + existingLot.carat, {collections:["meltLots"]}, function(){
+          return Store.updateMeltLot(existingLot.id, mergedData);
+        });
+        toast("Ajouté au lot " + existingLot.carat + " existant (" + fmtNum(mergedWeightOrigin,2) + " g cumulés)");
+      } else {
+        var newData = {
+          carat: carat, weightOrigin: weightOrigin, weight18k: weight18k, cost: cost,
+          sold: false, salePrice: null
+        };
+        await withUndo("fonte", "Lot ajouté — " + carat, {collections:["meltLots"]}, function(){
+          return Store.addMeltLot(newData);
+        });
+        toast("Nouveau lot " + carat + " créé");
+      }
+    }
+    resetFonteForm();
+  });
+
+  document.getElementById("fonteTableBody").addEventListener("click", function(e){
+    var btn = e.target.closest("button");
+    if(!btn) return;
+    var act = btn.getAttribute("data-act");
+    var id = btn.getAttribute("data-id");
+    if(act === "melt-del"){ state.confirmDeleteMeltId = id; renderFonte(); }
+    else if(act === "melt-del-no"){ state.confirmDeleteMeltId = null; renderFonte(); }
+    else if(act === "melt-del-yes"){
+      state.confirmDeleteMeltId = null;
+      var delLot = state.meltLots.find(function(l){ return l.id === id; });
+      withUndo("fonte", "Lot supprimé — " + (delLot ? delLot.carat : ""), {collections:["meltLots"]}, function(){
+        return Store.deleteMeltLot(id);
+      }).then(function(){ toast("Lot supprimé"); });
+    } else if(act === "melt-edit"){
+      var editLot = state.meltLots.find(function(l){ return l.id === id; });
+      if(!editLot) return;
+      state.editingMeltId = id;
+      document.getElementById("flCarat").value = editLot.carat || "";
+      document.getElementById("flWeight").value = editLot.weightOrigin != null ? editLot.weightOrigin : "";
+      document.getElementById("flWeight18k").value = editLot.weight18k != null ? editLot.weight18k : "";
+      document.getElementById("flWeight18k").dataset.userEdited = "1";
+      document.getElementById("flCost").value = editLot.cost != null ? editLot.cost : "";
+      document.getElementById("fonteFormTitle").textContent = "Modifier le lot";
+      document.getElementById("fonteSubmitBtn").textContent = "Mettre à jour";
+      document.getElementById("fonteCancelBtn").hidden = false;
+      document.getElementById("fonteForm").scrollIntoView({behavior:"smooth", block:"center"});
+    } else if(act === "melt-sold"){
+      var lot = state.meltLots.find(function(l){ return l.id === id; });
+      if(!lot) return;
+      // Inline sale-price capture instead of a blocking prompt():
+      var row = btn.closest("tr");
+      row.querySelector('td:nth-child(5)').innerHTML = '<input type="number" step="0.01" min="0" class="melt-sale-input" style="width:90px;" placeholder="prix €">';
+      var inp = row.querySelector(".melt-sale-input");
+      inp.focus();
+      var confirmBtn = document.createElement("button");
+      confirmBtn.className = "btn btn-primary btn-sm";
+      confirmBtn.textContent = "OK";
+      confirmBtn.style.marginLeft = "6px";
+      inp.after(confirmBtn);
+      confirmBtn.addEventListener("click", async function(){
+        var v = parseFloat(inp.value) || 0;
+        await withUndo("fonte", "Lot marqué vendu — " + lot.carat, {collections:["meltLots"]}, function(){
+          return Store.updateMeltLot(id, Object.assign({}, lot, {sold:true, salePrice:v}));
+        });
+        toast("Lot marqué vendu");
+      });
+    }
+  });
+
+  /* ============================================================
+     RENDER: OR À FONDRE — VENTES EN DIRHAM
+  ============================================================ */
+  var DH_RATE = 10.65; // 1 € = 10,65 DH
+  var FONTE_DH_START = "2025-11";
+  var FONTE_DH_END = "2027-09";
+  function monthRange(startKey, endKey){
+    var out = [];
+    var y = parseInt(startKey.slice(0,4),10), m = parseInt(startKey.slice(5,7),10);
+    var endY = parseInt(endKey.slice(0,4),10), endM = parseInt(endKey.slice(5,7),10);
+    while(y < endY || (y === endY && m <= endM)){
+      out.push(y + "-" + String(m).padStart(2,"0"));
+      m++; if(m > 12){ m = 1; y++; }
+    }
+    return out;
+  }
+
+  function renderFonteDh(){
+    var months = monthRange(FONTE_DH_START, FONTE_DH_END);
+    var byMonth = {};
+    state.meltDhSales.forEach(function(m){ byMonth[m.id] = m; });
+
+    var body = document.getElementById("fonteDhTableBody");
+    body.innerHTML = months.map(function(mk){
+      var rec = byMonth[mk];
+      var hasData = !!(rec && (rec.weightSold || rec.caEur));
+      var flagged = rec && rec.note;
+      var montantDh = hasData
+        ? (rec.weightSold && rec.pricePerGramDh ? rec.weightSold*rec.pricePerGramDh : (rec.caEur ? rec.caEur*DH_RATE : null))
+        : null;
+      return '<tr>' +
+        '<td class="cell-muted">'+fmtMonth(mk)+'</td>' +
+        '<td class="num">'+(hasData && rec.weightSold ? fmtNum(rec.weightSold,2) : "—")+'</td>' +
+        '<td class="num">'+(hasData && rec.pricePerGramDh ? fmtNum(rec.pricePerGramDh,2)+" DH" : "—")+'</td>' +
+        '<td class="num">'+(montantDh ? fmtNum(montantDh,0)+" DH" : "—")+'</td>' +
+        '<td class="num">'+(hasData && rec.caEur ? fmtEUR(rec.caEur,0) : "—")+(flagged?' <span class="delta down" title="'+escapeHtml(rec.note)+'">⚠ à vérifier</span>':'')+'</td>' +
+        '<td><button class="icon-btn" data-act="dh-edit" data-month="'+mk+'" title="Modifier">✎</button></td>' +
+      '</tr>';
+    }).join("");
+  }
+
+  document.getElementById("fonteDhTableBody").addEventListener("click", function(e){
+    var btn = e.target.closest("button");
+    if(!btn || btn.getAttribute("data-act") !== "dh-edit") return;
+    var mk = btn.getAttribute("data-month");
+    var rec = state.meltDhSales.find(function(m){ return m.id === mk; }) || {};
+    document.getElementById("fdMonth").value = mk;
+    document.getElementById("fdWeight").value = rec.weightSold || "";
+    document.getElementById("fdPriceDh").value = rec.pricePerGramDh || "";
+    document.getElementById("fdCaEur").value = rec.caEur || "";
+    document.getElementById("fdCaEur").dataset.userEdited = rec.caEur ? "1" : "0";
+    document.getElementById("fonteDhForm").scrollIntoView({behavior:"smooth", block:"center"});
+  });
+
+  // CA (€) auto-calculé = poids vendu × prix/g (DH) ÷ 10,65 — reste modifiable
+  // à la main pour les mois où le montant a été communiqué directement en €.
+  function liveComputeDhCa(){
+    var caInput = document.getElementById("fdCaEur");
+    if(caInput.dataset.userEdited === "1") return;
+    var weight = parseFloat(document.getElementById("fdWeight").value);
+    var priceDh = parseFloat(document.getElementById("fdPriceDh").value);
+    if(weight && priceDh){
+      caInput.value = Math.round((weight*priceDh/DH_RATE)*100)/100;
+    } else {
+      caInput.value = "";
+    }
+  }
+  document.getElementById("fdWeight").addEventListener("input", liveComputeDhCa);
+  document.getElementById("fdPriceDh").addEventListener("input", liveComputeDhCa);
+  document.getElementById("fdCaEur").addEventListener("input", function(e){
+    e.target.dataset.userEdited = "1";
+  });
+
+  document.getElementById("fonteDhForm").addEventListener("submit", async function(e){
+    e.preventDefault();
+    var monthVal = document.getElementById("fdMonth").value;
+    if(!monthVal) return;
+    var data = {
+      weightSold: parseFloat(document.getElementById("fdWeight").value) || null,
+      pricePerGramDh: parseFloat(document.getElementById("fdPriceDh").value) || null,
+      caEur: parseFloat(document.getElementById("fdCaEur").value) || null
+    };
+    await withUndo("fonte", "Vente Dh enregistrée — " + fmtMonth(monthVal), {collections:["meltDhSales"]}, function(){
+      return Store.saveMeltDhSale(monthVal, data);
+    });
+    e.target.reset();
+    document.getElementById("fdCaEur").dataset.userEdited = "0";
+    toast("Vente du mois enregistrée");
+  });
+
+  /* ============================================================
+     EXPORT ALL DATA
+  ============================================================ */
+  async function exportAllData(){
+    var exportData = {
+      exportTimestamp: new Date().toISOString(),
+      exportVersion: "1.0",
+      collections: {
+        stock: state.stock.slice(),
+        sales: state.sales.slice(),
+        vintedAccounts: state.vintedAccounts.slice(),
+        meltLots: state.meltLots.slice(),
+        meltDhSales: state.meltDhSales.slice()
+      },
+      settings: {
+        goal: state.goal ? Object.assign({}, state.goal) : {},
+        vintedThreshold: state.vintedThreshold ? Object.assign({}, state.vintedThreshold) : null,
+        meltRate18k: state.meltRate18k ? Object.assign({}, state.meltRate18k) : null
+      }
+    };
+
+    var jsonStr = JSON.stringify(exportData, null, 2);
+    var filename = "okazor-export-" + new Date().toISOString().slice(0,10) + ".json";
+
+    // Log the complete data to console for direct access
+    console.log("OKAZOR_EXPORT_DATA", exportData);
+    console.log("Copy the data below as JSON:");
+    console.log(jsonStr);
+
+    // Try to use the downloads capability if available
+    try {
+      if(typeof window.claude !== "undefined" && window.claude.downloads){
+        await window.claude.downloads.save(jsonStr, filename);
+        toast("Données exportées (téléchargement)");
+      } else {
+        // Fallback: use data URL approach
+        var blob = new Blob([jsonStr], {type:"application/json"});
+        var url = URL.createObjectURL(blob);
+        var link = document.createElement("a");
+        link.href = url;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        toast("Données exportées (voir console)");
+      }
+    } catch(e){
+      console.error("Export error:", e);
+      toast("Voir console pour les données", true);
+    }
+
+    return exportData;
+  }
+
+  // Expose export function to console for direct access
+  window._okazorExport = exportAllData;
+
+  /* ============================================================
+     MASTER RENDER
+  ============================================================ */
+
+  /* ============================================================
+     VERSION HTML AUTONOME — données copiées depuis l'artifact
+     "Suivi OKAZOR" et gardées dans ce navigateur (localStorage).
+  ============================================================ */
+  var SNAPSHOT = {"version":"2026-09-25T19:18:57.369Z","stock":[{"id":"0xy3vjpl452yjpr9t8rc","cost":94,"product":"bague aprile","ref":"66","weight":1.71},{"id":"1oq6ba27ylmia3jekgln","cost":15,"product":"Bo opale 9k","ref":"1033","weight":0.4},{"id":"2erqmhbqdz4ij2cgkezg","cost":36,"product":"Bo vintage oz","ref":"1028","weight":0.6},{"id":"2qyhc270hir5svn1t6sm","cost":69,"product":"Collier maille singapour nacre","ref":"1041","weight":1.2},{"id":"2vumjjrd54c4u3at3qqx","cost":24,"product":"Bracelet perles","ref":"1025","weight":0.66},{"id":"4izllvnmxj948080axxd","cost":40,"product":"Bo chainettes","ref":"1047","weight":1},{"id":"4lw1ypomj778bnvnvc03","cost":183,"product":"Parure onyx diam's","ref":"1027","weight":3},{"id":"4r45c1eajntdmvo90bei","cost":87,"product":"Bague croisée","ref":"1034","weight":1.8},{"id":"6eszm0kml80fljxxooyj","cost":8,"product":"collier céramique diam's","ref":"1036","weight":0.6},{"id":"6icp79wy8bx4cwwepbnf","cost":21,"product":"Bo 2 ors","ref":"1048","weight":0.7},{"id":"97qrrmlvpmv2ug5creje","cost":18,"product":"Bo goutte oz","ref":"1046","weight":0.65},{"id":"a4pro8rcorggeifmkt2z","cost":60,"product":"parrure coccinelle","ref":"1042","weight":0.9},{"id":"aud1e0jkvyj38u3ol72x","cost":232,"product":"Bracelet gourmette saphir","ref":"1026","weight":2.5},{"id":"b05it4fwva9rz1zjqwhe","cost":19,"product":"Pendentif coeur oz 14k","ref":"1029","weight":0.7},{"id":"d4mykn2bioox22w7qt7q","cost":47,"product":"Bague forme diam's oz","ref":"811","weight":0.8},{"id":"dlc0vhpu3v6mdxuc0gyd","cost":77,"product":"Collier laqué spinelle","ref":"1043","weight":1.4},{"id":"e8asm843rg87gqodqr3n","cost":34,"product":"Pendentif perles diam's milluna","ref":"1038","weight":0.4},{"id":"h0uprjt2449ntelu0sz3","cost":82,"product":"Pendentifs diam's perles","ref":"1049","weight":0.8},{"id":"hagtc2oe3wtiiea5vb8v","cost":33,"product":"Collier topaze 9k Diam's","ref":"1021","weight":0.55},{"id":"iohlxu1u710dm1baanhf","cost":150,"product":"Collier rubis diam's 12k","ref":"1023","weight":3},{"id":"ix7tewbjfbgo0mjx3ash","cost":24,"product":"Bo solitaire oz or blanc","ref":"107","weight":0.54},{"id":"kg6wti1xsjfrf3k40png","cost":19,"product":"Bo nacre 9k","ref":"","weight":0.3},{"id":"l9e1swb0qdvbk5kg3gdp","cost":44,"product":"Collier trilogie 9k Diam's","ref":"1018","weight":0.77},{"id":"lz5o7bm9r2kbuij4smw7","cost":57,"product":"Créoles vintage perles","ref":"1051","weight":1.2},{"id":"n0eardxx0n6dxzjmmucj","cost":24,"product":"Bague solitaire 2 ors Diam's","ref":"1037","weight":2.9},{"id":"nd2u1up2xlocriujl26r","cost":77,"product":"Bo laqué spinelle","ref":"1044","weight":1.4},{"id":"ndw6gk1iyf07x4zwvr0m","cost":15,"product":"Percing nombril 9k oz","ref":"1040","weight":0.3},{"id":"nq8hrq64q76aewy6b58c","cost":232,"product":"Bo clipps perles diamants","ref":"1022","weight":4},{"id":"oyjrvukmew58b0psggx1","cost":40,"product":"Créoles ovales 9k","ref":"1050","weight":0.55},{"id":"q039x2gqpmddb4d1zwr3","cost":3,"product":"Cordon fermoir or","ref":"1032","weight":0.3},{"id":"qy0vocnsg4d4uhiksato","cost":30,"product":"Pendentif cœur Améthyste","ref":"1035","weight":0.35},{"id":"rs07bh6vr9ktz7y2asop","cost":236,"product":"Collier Milluna Diam's","ref":"1019","weight":4.24},{"id":"s001","cost":24,"product":"bague 9k","ref":"15","weight":0.6},{"id":"s002","cost":213,"product":"collier vintage saphir","ref":"35","weight":5.8},{"id":"s003","cost":37,"product":"bague infini","ref":"41","weight":1.62},{"id":"s004","cost":66,"product":"bague diam's","ref":"42","weight":1.67},{"id":"s005","cost":140,"product":"bague diam's","ref":"44","weight":3.34},{"id":"s006","cost":137,"product":"bague","ref":"57","weight":3.54},{"id":"s008","cost":36,"product":"dormeuse rubis","ref":"59","weight":2.19},{"id":"s009","cost":56,"product":"bague","ref":"60","weight":2.71},{"id":"s010","cost":300,"product":"collier salvini","ref":"64","weight":6},{"id":"s011","cost":64,"product":"bague rubis","ref":"65","weight":1.91},{"id":"s012","cost":160,"product":"bague Vintage saphir Diam's","ref":"67","weight":7.57},{"id":"s013","cost":182,"product":"bague saphir","ref":"72","weight":4.87},{"id":"s014","cost":224,"product":"bague saphir","ref":"73","weight":8.08},{"id":"s015","cost":99,"product":"collier trilogie","ref":"84","weight":4.67},{"id":"s016","cost":39,"product":"bo étoile","ref":"87","weight":1.26},{"id":"s017","cost":41,"product":"broche","ref":"89","weight":0.5},{"id":"s018","cost":100,"product":"bague pomoleto","ref":"90","weight":2.96},{"id":"s019","cost":44,"product":"collier","ref":"94","weight":2.11},{"id":"s020","cost":12,"product":"collier papillon","ref":"108","weight":6.14},{"id":"s021","cost":52,"product":"collier solitaire","ref":"109","weight":1.41},{"id":"s022","cost":39,"product":"Bague alliance zirco","ref":"110","weight":2.37},{"id":"s023","cost":15,"product":"pendentif rubis","ref":"119","weight":1.67},{"id":"s024","cost":213,"product":"bague diam's","ref":"120","weight":5.82},{"id":"s025","cost":208,"product":"bague diam's","ref":"123","weight":6.17},{"id":"s026","cost":39,"product":"pendentif carré rubis","ref":"124","weight":2.72},{"id":"s027","cost":17,"product":"dormeuse citrine","ref":"125","weight":2.43},{"id":"s028","cost":56,"product":"Alliance diam's","ref":"127","weight":2.38},{"id":"s029","cost":100,"product":"solitaire","ref":"128","weight":2.5},{"id":"s030","cost":102,"product":"bo croisé diam's","ref":"130","weight":3.69},{"id":"s031","cost":225,"product":"collier + pendentif fleur rubis","ref":"132","weight":6},{"id":"s032","cost":140,"product":"Parrure perridot saphir","ref":"133","weight":5.11},{"id":"s033","cost":57,"product":"bague turquoise","ref":"135","weight":4.71},{"id":"s034","cost":30,"product":"bague large oz","ref":"136","weight":1.4},{"id":"s035","cost":53,"product":"bague diam's noire","ref":"137","weight":2.7},{"id":"s036","cost":150,"product":"bague Mauboussin","ref":"145","weight":3.19},{"id":"s038","cost":10,"product":"bague infini oz","ref":"149","weight":0.92},{"id":"s039","cost":35,"product":"creoles 2 ors diam's","ref":"152","weight":3.59},{"id":"s040","cost":141,"product":"bo clips oz","ref":"157","weight":1.8},{"id":"s041","cost":66,"product":"collier lune resine verte","ref":"180","weight":1.12},{"id":"s042","cost":45,"product":"collier V diam's","ref":"184","weight":0.9},{"id":"s043","cost":48,"product":"collier Mama 9k","ref":"187","weight":1.41},{"id":"s044","cost":136,"product":"bo vintage 14k","ref":"190","weight":7.73},{"id":"s045","cost":25,"product":"pendentif ceramique diam's","ref":"193","weight":1.15},{"id":"s046","cost":140,"product":"bague diam's","ref":"196","weight":3.35},{"id":"s047","cost":58,"product":"collier diam's rubis","ref":"202","weight":2.2},{"id":"s048","cost":198,"product":"bo perles Nimei","ref":"206","weight":5},{"id":"s049","cost":33,"product":"bo comete papillon","ref":"207","weight":1.4},{"id":"s050","cost":22,"product":"collier perles rouges","ref":"214","weight":0.6},{"id":"s051","cost":35,"product":"bo oz","ref":"218","weight":1.05},{"id":"s052","cost":129,"product":"bague saphir diam's","ref":"225","weight":2.03},{"id":"s053","cost":45,"product":"bo ceramique diam's","ref":"232","weight":1.15},{"id":"s054","cost":50,"product":"bague + pende diam's","ref":"233","weight":0.9},{"id":"s055","cost":83,"product":"bracelet diam's 8k","ref":"253","weight":2.34},{"id":"s056","cost":210,"product":"bague trilogie","ref":"262","weight":3.72},{"id":"s057","cost":130,"product":"bo Bliss 2 ors diam's","ref":"263","weight":2.74},{"id":"s058","cost":50,"product":"collier danseuse étoile","ref":"266","weight":1.15},{"id":"s059","cost":30,"product":"bo mimie disney","ref":"272","weight":0.55},{"id":"s060","cost":73,"product":"solitaire Diam's","ref":"278","weight":1.3},{"id":"s061","cost":9,"product":"pendentif rubis 8k","ref":"280","weight":0.25},{"id":"s062","cost":24,"product":"chaine or blanc","ref":"285","weight":0.88},{"id":"s063","cost":36,"product":"bo bliss perles","ref":"289","weight":2.02},{"id":"s064","cost":188,"product":"pendentif éléphant 14k","ref":"293","weight":4.35},{"id":"s066","cost":26,"product":"bracelet tennis","ref":"313","weight":4.34},{"id":"s067","cost":78,"product":"bague Amethyste 9k","ref":"321","weight":2},{"id":"s068","cost":37,"product":"camée fleur","ref":"333","weight":2},{"id":"s069","cost":340,"product":"Collier Coeur et pierre precieuse","ref":"334","weight":8.93},{"id":"s070","cost":1380,"product":"bague Chopard","ref":"352","weight":15.36},{"id":"s071","cost":70,"product":"pendentif diam's 14k","ref":"356","weight":3.78},{"id":"s072","cost":52,"product":"parure 9k","ref":"378","weight":1},{"id":"s073","cost":157,"product":"bo clips 3 pierres","ref":"381","weight":4.24},{"id":"s074","cost":40,"product":"creoles Grande 9k","ref":"386","weight":0.85},{"id":"s075","cost":215,"product":"Créoles diam's","ref":"408","weight":4.3},{"id":"s076","cost":460,"product":"Bracelet charm sac","ref":"409","weight":5},{"id":"s077","cost":7,"product":"Bo Ambre 9k","ref":"419","weight":0.5},{"id":"s078","cost":109,"product":"Collier Art déco saphir diam's","ref":"425","weight":5.67},{"id":"s079","cost":35,"product":"Bague solitaire oz 9k","ref":"432","weight":0.75},{"id":"s080","cost":18,"product":"Bo barettes diam's 9k","ref":"436","weight":0.73},{"id":"s081","cost":41,"product":"Bague Ambre 14k","ref":"440","weight":1.2},{"id":"s082","cost":109,"product":"Bague diam's Matty","ref":"445","weight":1.91},{"id":"s083","cost":29,"product":"Bracelet Perles 14 k","ref":"449","weight":0.6},{"id":"s084","cost":65,"product":"Pendentif perles japon diam's","ref":"450","weight":1.2},{"id":"s085","cost":11,"product":"Collier infini14k","ref":"455","weight":1.82},{"id":"s086","cost":45,"product":"Collier lune Diam's","ref":"462","weight":1.29},{"id":"s087","cost":70,"product":"Bo saphir MAB","ref":"463","weight":1.31},{"id":"s088","cost":75,"product":"Collier Onyx","ref":"471","weight":1.15},{"id":"s089","cost":39,"product":"Pendentif Baccarat","ref":"473","weight":1},{"id":"s090","cost":26,"product":"Parure 9k OZ","ref":"481","weight":0.81},{"id":"s091","cost":182,"product":"Collier Emeraude","ref":"482","weight":3.08},{"id":"s092","cost":17,"product":"Bo 2 ors Diam's 9k","ref":"484","weight":0.36},{"id":"s093","cost":19,"product":"Bague 2 Diamants","ref":"491","weight":2.89},{"id":"s094","cost":39,"product":"Bo diam's14k","ref":"492","weight":1.09},{"id":"s095","cost":13,"product":"Bague Vintage solitaire Diam's","ref":"493","weight":2.73},{"id":"s096","cost":25,"product":"Bague Vintage","ref":"499","weight":4},{"id":"s097","cost":47,"product":"Pendentif oz","ref":"500","weight":1.05},{"id":"s098","cost":17,"product":"Pendentif Coeur arbre à vie 9k","ref":"501","weight":0.65},{"id":"s100","cost":185,"product":"Bracelet Hellokitie","ref":"505","weight":3.64},{"id":"s101","cost":160,"product":"Boites Chaine + Pendentif Diam's","ref":"513","weight":2.13},{"id":"s102","cost":35,"product":"Alliance 9 k","ref":"517","weight":0.43},{"id":"s103","cost":35,"product":"Lot pendentif 9/12k","ref":"528","weight":0.56},{"id":"s104","cost":24,"product":"Créoles infinty 9k","ref":"532","weight":0.56},{"id":"s105","cost":32,"product":"Bo Vis Rubis 14k","ref":"535","weight":1.98},{"id":"s106","cost":35,"product":"Bague 9k","ref":"540","weight":0.55},{"id":"s107","cost":17,"product":"Collier infini 9k","ref":"541","weight":0.5},{"id":"s108","cost":151,"product":"Pendentif camée broche","ref":"542","weight":2.43},{"id":"s109","cost":12,"product":"Bo Oz 9k","ref":"544","weight":0.28},{"id":"s110","cost":35,"product":"Bracelet 14k","ref":"546","weight":0.43},{"id":"s111","cost":13,"product":"Bracelet infini or rose 9k","ref":"552","weight":0.4},{"id":"s112","cost":10,"product":"Bo 9k","ref":"555","weight":0.29},{"id":"s113","cost":372,"product":"Bague Diam's blanc et brun","ref":"558","weight":6.5},{"id":"s114","cost":35,"product":"Pendentif Perles 14k","ref":"559","weight":0.8},{"id":"s115","cost":104,"product":"Bague Tahiti Diam's","ref":"565","weight":2.42},{"id":"s116","cost":56,"product":"Bague Diam's 8k","ref":"566","weight":1.19},{"id":"s117","cost":35,"product":"Bague Saphir 9k","ref":"567","weight":0.8},{"id":"s118","cost":30,"product":"Créoles Torsadé 9k","ref":"568","weight":0.37},{"id":"s119","cost":14,"product":"Bo crochet perles","ref":"575","weight":0.8},{"id":"s120","cost":35,"product":"Bo pierre citrine quartz","ref":"577","weight":0.8},{"id":"s121","cost":326,"product":"Bague Saphir Diam's","ref":"582","weight":5.14},{"id":"s122","cost":35,"product":"Bo fleur perle","ref":"583","weight":0.8},{"id":"s123","cost":50,"product":"Collier double coeur oz blanc N 9k","ref":"584","weight":1.3},{"id":"s124","cost":47,"product":"Pendentif JTM","ref":"585","weight":0.82},{"id":"s125","cost":17,"product":"Bracelet perles Améthyste","ref":"598","weight":0.22},{"id":"s126","cost":100,"product":"Pendentif coeur ors diam's","ref":"603","weight":2.53},{"id":"s127","cost":199,"product":"Collier HELLO KITTY","ref":"604","weight":5},{"id":"s128","cost":40,"product":"Bague diam's certificat 9k","ref":"606","weight":0.7},{"id":"s129","cost":30,"product":"Collier Diam's certificat","ref":"608","weight":0.45},{"id":"s130","cost":35,"product":"Collier perles","ref":"613","weight":0.7},{"id":"s131","cost":78,"product":"Bague valenza","ref":"619","weight":2},{"id":"s132","cost":20,"product":"Pendentif coeur 9k","ref":"620","weight":0.4},{"id":"s133","cost":108,"product":"Bague Tahiti Diam's 2 ors","ref":"622","weight":1.2},{"id":"s134","cost":193,"product":"Bague 2 ors diam's","ref":"625","weight":3.56},{"id":"s135","cost":18,"product":"Bracelet BB","ref":"630","weight":0.51},{"id":"s136","cost":72,"product":"Bo coeur comette","ref":"631","weight":2.13},{"id":"s137","cost":66,"product":"Pendentif DODO","ref":"634","weight":0.98},{"id":"s138","cost":300,"product":"Bo vintage perles et saphir 12k","ref":"637","weight":4.5},{"id":"s139","cost":87,"product":"Bague oz","ref":"638","weight":0.8},{"id":"s140","cost":40,"product":"Bague solitaire diam's 14k","ref":"643","weight":0.79},{"id":"s141","cost":157,"product":"Bague rond pavage diam's","ref":"645","weight":2.65},{"id":"s142","cost":162,"product":"Bague ouverte Diam's","ref":"646","weight":3.15},{"id":"s143","cost":35,"product":"Bo Ambre","ref":"649","weight":0.7},{"id":"s144","cost":19,"product":"Bo 2ors 9k","ref":"651","weight":0.22},{"id":"s145","cost":20,"product":"Pendentif ceramique maty 9k","ref":"652","weight":0.3},{"id":"s146","cost":47,"product":"Pendenti quartz comète","ref":"653","weight":1.42},{"id":"s147","cost":61,"product":"collier diam's","ref":"654","weight":1.43},{"id":"s148","cost":24,"product":"Baque 9 k pierre à verif","ref":"655","weight":1},{"id":"s149","cost":26,"product":"Bague 9k oz","ref":"658","weight":1.25},{"id":"s150","cost":12,"product":"Pendentif nacre","ref":"660","weight":0.5},{"id":"s151","cost":14,"product":"Collier fil transparant","ref":"661","weight":0.5},{"id":"s152","cost":10,"product":"Bo étoile de mer laqué vert","ref":"662","weight":0.43},{"id":"s153","cost":109,"product":"Bague ors émeuraude","ref":"663","weight":1.55},{"id":"s154","cost":130,"product":"Bague oz noir et blanc","ref":"666","weight":2.5},{"id":"s155","cost":118,"product":"Chaine maille gourmette 8k","ref":"668","weight":1.2},{"id":"s156","cost":35,"product":"Bracelet or blanc 9k","ref":"671","weight":0.33},{"id":"s157","cost":57,"product":"Bague vintage","ref":"673","weight":0.81},{"id":"s158","cost":66,"product":"Collier perles fermoire boule","ref":"674","weight":1},{"id":"s159","cost":19,"product":"Bo clochette 9k","ref":"675","weight":0.23},{"id":"s160","cost":340,"product":"Collier dim's Miluna","ref":"676","weight":5.47},{"id":"s161","cost":79,"product":"Collier vintage 8k","ref":"681","weight":1.24},{"id":"s162","cost":27,"product":"Bo dormeuse coeur 8k","ref":"682","weight":0.6},{"id":"s163","cost":37,"product":"Bo topaze 9k","ref":"683","weight":0.33},{"id":"s164","cost":25,"product":"Bo perles","ref":"686","weight":0.6},{"id":"s165","cost":19,"product":"Pendentif nacre diam's","ref":"687","weight":0.6},{"id":"s167","cost":9,"product":"Collier cordon","ref":"693","weight":0.35},{"id":"s168","cost":24,"product":"Pendentif triple coeur diam's","ref":"694","weight":1.14},{"id":"s169","cost":12,"product":"Cordon","ref":"697","weight":0.35},{"id":"s170","cost":68,"product":"Bo Rubis","ref":"700","weight":2.6},{"id":"s171","cost":30,"product":"Bo fleur BB","ref":"702","weight":0.4},{"id":"s172","cost":40,"product":"Collier diam's 9k","ref":"708","weight":0.57},{"id":"s173","cost":73,"product":"Pendentif pavage diam's","ref":"709","weight":2.35},{"id":"s174","cost":47,"product":"Bague coeur ors 9k oz","ref":"712","weight":0.62},{"id":"s175","cost":51,"product":"Pendentif coeur 2 ors Diam's","ref":"713","weight":1.74},{"id":"s176","cost":40,"product":"Bague 2 ors diam's","ref":"714","weight":0.44},{"id":"s177","cost":20,"product":"Bo diam's 9k","ref":"716","weight":0.27},{"id":"s178","cost":89,"product":"Chaine Maille corde or blanc","ref":"720","weight":2.85},{"id":"s179","cost":19,"product":"Collier topaze citrine diam's 9k","ref":"726","weight":0.91},{"id":"s180","cost":70,"product":"Créoles diam's rose","ref":"727","weight":1.22},{"id":"s181","cost":20,"product":"Chaine or blanc","ref":"728","weight":0.9},{"id":"s182","cost":15,"product":"Bo cercles oz 9k","ref":"729","weight":0.5},{"id":"s183","cost":109,"product":"Collier Diam's Didier Guerin","ref":"735","weight":1.97},{"id":"s184","cost":210,"product":"Créoles perles Diam's","ref":"738","weight":2.8},{"id":"s185","cost":19,"product":"Bo Vintage 9k","ref":"739","weight":0.4},{"id":"s186","cost":39,"product":"Bague oz","ref":"741","weight":1},{"id":"s187","cost":14,"product":"Bo 9k Diam's boite","ref":"743","weight":0.25},{"id":"s188","cost":35,"product":"Percing nombril","ref":"747","weight":0.8},{"id":"s189","cost":42,"product":"Bague Dima's noir 9k","ref":"748","weight":0.44},{"id":"s190","cost":98,"product":"Bague or blanc saphir","ref":"749","weight":1.28},{"id":"s191","cost":30,"product":"Bague multi or Acier","ref":"752","weight":0.77},{"id":"s192","cost":77,"product":"Pendentif Coeur diam's 8k","ref":"757","weight":3.25},{"id":"s193","cost":33,"product":"Bague diam's infiniti 9k","ref":"758","weight":0.39},{"id":"s195","cost":162,"product":"Bracelet Breloque pierre","ref":"763","weight":2.2},{"id":"s196","cost":68,"product":"Bague citrine Baccarat","ref":"765","weight":0.6},{"id":"s197","cost":19,"product":"Bo perles aubergine","ref":"769","weight":0.4},{"id":"s198","cost":142,"product":"Bague oeil de tigre 8k","ref":"770","weight":1.33},{"id":"s199","cost":25,"product":"Pendentif flamant rose","ref":"772","weight":0.3},{"id":"s200","cost":50,"product":"Bo saphir 14k","ref":"775","weight":1.5},{"id":"s201","cost":19,"product":"Bo perles 9k","ref":"776","weight":0.2},{"id":"s202","cost":18,"product":"Bo saphir trèfles","ref":"777","weight":0.89},{"id":"s203","cost":94,"product":"Bague Saphir Diam's 14k","ref":"778","weight":2},{"id":"s204","cost":46,"product":"Bo cercles perles","ref":"779","weight":1.5},{"id":"s205","cost":30,"product":"Bracelet coeur 9k","ref":"780","weight":0.33},{"id":"s206","cost":10,"product":"Pendentif saphir","ref":"781","weight":1.4},{"id":"s207","cost":25,"product":"Bracelet Améthyste","ref":"782","weight":1.2},{"id":"s208","cost":55,"product":"Pendentif infini diam's","ref":"783","weight":1},{"id":"s209","cost":8,"product":"Bo coeur oz 9k","ref":"786","weight":0.24},{"id":"s210","cost":26,"product":"Bracelet perles","ref":"787","weight":0.8},{"id":"s211","cost":131,"product":"Bracelet pierre coloré","ref":"789","weight":1.6},{"id":"s212","cost":14,"product":"Bo étoile 9k","ref":"791","weight":0.31},{"id":"s213","cost":29,"product":"Dormeuses onyx","ref":"794","weight":0.7},{"id":"s214","cost":6,"product":"Bracelet papillon cordon 9k","ref":"796","weight":0.2},{"id":"s215","cost":45,"product":"Bo diam's solitaire","ref":"797","weight":0.75},{"id":"s216","cost":130,"product":"Créoles 3 ors","ref":"799","weight":1.76},{"id":"s217","cost":18,"product":"Bracelet trèfle coccinel 9k","ref":"801","weight":0.51},{"id":"s218","cost":7,"product":"Bo bébé fraise 9k","ref":"804","weight":0.22},{"id":"s219","cost":15,"product":"Bague bb tortue 8k","ref":"806","weight":0.22},{"id":"s220","cost":36,"product":"bague or rose 9k","ref":"810","weight":0.58},{"id":"s221","cost":77,"product":"Bo perles diam's","ref":"812","weight":0.9},{"id":"s222","cost":66,"product":"Pendentif perle de culture fleur","ref":"813","weight":0.8},{"id":"s223","cost":25,"product":"Bo perle Hématite","ref":"814","weight":0.84},{"id":"s224","cost":17,"product":"Bo Pendantes 9k","ref":"816","weight":0.3},{"id":"s226","cost":35,"product":"Pendentif Emeuraude","ref":"820","weight":0.65},{"id":"s227","cost":19,"product":"Pendenyif nacre","ref":"821","weight":0.77},{"id":"s228","cost":24,"product":"Pendentif coeur Améthyste coeur 9k","ref":"822","weight":0.27},{"id":"s229","cost":14,"product":"Collier infini Diam's 9k","ref":"826","weight":0.67},{"id":"s230","cost":35,"product":"Bracelet Perles Hémtite","ref":"828","weight":0.85},{"id":"s231","cost":35,"product":"Bracelet BB bonbon 9k","ref":"830","weight":0.48},{"id":"s232","cost":5,"product":"Pendentif coeur oz","ref":"832","weight":0.75},{"id":"s234","cost":26,"product":"Bracelet Perles et or","ref":"835","weight":0.8},{"id":"s235","cost":80,"product":"Pendentif 2 ors diam's Coeur","ref":"838","weight":1.55},{"id":"s236","cost":19,"product":"Collier solitaire 9k","ref":"840","weight":0.6},{"id":"s237","cost":309,"product":"Bague trio Rubis émeraude saphir blanc","ref":"841","weight":6.2},{"id":"s238","cost":42,"product":"Chaine +pendentig saphir 9k","ref":"843","weight":0.71},{"id":"s239","cost":47,"product":"Chaine singapour 9k","ref":"844","weight":0.94},{"id":"s241","cost":38,"product":"Bague 4 anneaux","ref":"850","weight":1.13},{"id":"s242","cost":202,"product":"Créole 2 ors oz","ref":"852","weight":4.3},{"id":"s243","cost":34,"product":"Bo perle Lapislozalli","ref":"859","weight":0.6},{"id":"s244","cost":35,"product":"Bo pendente coeur","ref":"860","weight":1.13},{"id":"s245","cost":25,"product":"Alliance 8k","ref":"861","weight":0.32},{"id":"s246","cost":35,"product":"Bo papillon or rose","ref":"862","weight":1.38},{"id":"s247","cost":278,"product":"Bague pierre verte","ref":"865","weight":6},{"id":"s248","cost":14,"product":"Bo cerise 9 k","ref":"866","weight":0.23},{"id":"s249","cost":25,"product":"Pendentif étoile","ref":"869","weight":0.43},{"id":"s250","cost":90,"product":"Créole oz 14k","ref":"870","weight":2.31},{"id":"s251","cost":25,"product":"Bo or lisse et satiné","ref":"871","weight":0.85},{"id":"s252","cost":9,"product":"Bo papillon 9k","ref":"872","weight":0.2},{"id":"s253","cost":56,"product":"Créole coeur","ref":"873","weight":1.04},{"id":"s254","cost":19,"product":"Bo libellule","ref":"874","weight":1.35},{"id":"s255","cost":31,"product":"Bo comete perles","ref":"875","weight":0.5},{"id":"s256","cost":35,"product":"Collier pierre violette 9k","ref":"877","weight":0.4},{"id":"s257","cost":7,"product":"Bague 19,2k","ref":"878","weight":0.66},{"id":"s258","cost":84,"product":"Chaine Venitienne","ref":"879","weight":1.37},{"id":"s259","cost":19,"product":"Chaine solitaire 9k","ref":"880","weight":0.53},{"id":"s260","cost":58,"product":"Créole papillon","ref":"881","weight":1.06},{"id":"s261","cost":31,"product":"Bague oz","ref":"882","weight":1.15},{"id":"s263","cost":109,"product":"Bague saphir diam's","ref":"884","weight":1.86},{"id":"s264","cost":39,"product":"Bague rubis dia'ms 9k","ref":"885","weight":0.53},{"id":"s266","cost":32,"product":"Alliance dimant","ref":"888","weight":1.35},{"id":"s267","cost":87,"product":"Bague diam's","ref":"890","weight":1.94},{"id":"s268","cost":14,"product":"Bo boule satiné 14k","ref":"891","weight":0.93},{"id":"s269","cost":39,"product":"Bague topaze 9k","ref":"894","weight":0.55},{"id":"s270","cost":55,"product":"Bo lune Diam's","ref":"469","weight":1.56},{"id":"s271","cost":24,"product":"Penedentif clé oz noir blanc","ref":"897","weight":0.8},{"id":"s272","cost":210,"product":"Bo vintage diam's","ref":"900","weight":2.9},{"id":"s273","cost":380,"product":"Bague Mauboussin 3 anneaux Diam's","ref":"904","weight":3.45},{"id":"s274","cost":35,"product":"Collier Cordon pendentif bois saphir Diamant","ref":"905","weight":0.7},{"id":"s275","cost":29,"product":"Bague oz 9k","ref":"906","weight":0.4},{"id":"s276","cost":99,"product":"Bo Dormeuse Topaze","ref":"907","weight":1.5},{"id":"s278","cost":5,"product":"Bo coeur 9k","ref":"909","weight":0.13},{"id":"s279","cost":65,"product":"Collier oméga 9k","ref":"910","weight":1.57},{"id":"s280","cost":42,"product":"Pendentif Améthyste diam's","ref":"913","weight":1},{"id":"s281","cost":16,"product":"Bo oz","ref":"916","weight":0.55},{"id":"s282","cost":14,"product":"Bracelet perles blanche fermoir 9k","ref":"919","weight":0.15},{"id":"s283","cost":140,"product":"Bracelet fleur 14k","ref":"920","weight":3.5},{"id":"s284","cost":204,"product":"Collier Vieri rubis perles","ref":"921","weight":7},{"id":"s285","cost":15,"product":"Bo cerise","ref":"925","weight":1.06},{"id":"s286","cost":108,"product":"Collier cable perle","ref":"926","weight":1.3},{"id":"s287","cost":13,"product":"Pendentif licorne","ref":"927","weight":0.4},{"id":"s288","cost":10,"product":"Bo fleur laqué","ref":"928","weight":0.46},{"id":"s290","cost":53,"product":"Collier oz","ref":"932","weight":1},{"id":"s291","cost":24,"product":"Bracelet coeur 9k","ref":"933","weight":0.23},{"id":"s292","cost":35,"product":"Collier infini Diam's 9k","ref":"934","weight":0.52},{"id":"s293","cost":35,"product":"Bracelet turquoise oz 9k","ref":"935","weight":0.58},{"id":"s294","cost":14,"product":"Bo boules satinées 14k","ref":"936","weight":0.95},{"id":"s295","cost":55,"product":"Bo Cl oz","ref":"937","weight":1},{"id":"s296","cost":56,"product":"Bague cerifié saphir","ref":"938","weight":3.85},{"id":"s297","cost":58,"product":"Pendentif photo 9k Nacre","ref":"940","weight":1.24},{"id":"s299","cost":191,"product":"Pendentif style chopard","ref":"943","weight":4.2},{"id":"s300","cost":109,"product":"Bague mauboussin Nacre diam's","ref":"944","weight":2.12},{"id":"s301","cost":30,"product":"Pendentif fleur topaze","ref":"945","weight":2.12},{"id":"s302","cost":31,"product":"Pendentif Ange","ref":"946","weight":0.94},{"id":"s303","cost":96,"product":"Bo 2 ors Saphir","ref":"947","weight":1.58},{"id":"s304","cost":52,"product":"Pendentif coeur oz","ref":"948","weight":0.75},{"id":"s306","cost":124,"product":"Pendentif Diamant","ref":"950","weight":3.76},{"id":"s307","cost":143,"product":"Chaine","ref":"951","weight":4.34},{"id":"s308","cost":210,"product":"Chaine forçat","ref":"955","weight":3.69},{"id":"s309","cost":71,"product":"Bague 3 ors Maty 9k","ref":"957","weight":1.51},{"id":"s310","cost":108,"product":"Gourmette","ref":"958","weight":3.15},{"id":"s312","cost":120,"product":"Bague rubis","ref":"960","weight":1.95},{"id":"s313","cost":10,"product":"Pendentif solitaire diam's","ref":"961","weight":0.78},{"id":"s314","cost":169,"product":"Créoles 9k émail Murat","ref":"965","weight":2.91},{"id":"s315","cost":50,"product":"Bo perles diam's","ref":"966","weight":1.3},{"id":"s316","cost":53,"product":"Pendentif Paul&joe","ref":"968","weight":1.97},{"id":"s317","cost":35,"product":"Pendentif Arbre de vie 9k","ref":"969","weight":0.42},{"id":"s318","cost":20,"product":"Bague saphir 14k","ref":"971","weight":1},{"id":"s319","cost":40,"product":"Collier 2 coeurs 9k","ref":"973","weight":0.5},{"id":"s320","cost":20,"product":"Bo oz 9k","ref":"974","weight":0.35},{"id":"s321","cost":17,"product":"Bo poire 9k","ref":"977","weight":0.16},{"id":"s322","cost":9,"product":"Collier infini Diam's","ref":"978","weight":1.95},{"id":"s323","cost":92,"product":"Bague Aigue marine vintage","ref":"980","weight":1.5},{"id":"s324","cost":15,"product":"Pendentif oz 9k","ref":"981","weight":0.3},{"id":"s325","cost":20,"product":"Bo oz 9k","ref":"982","weight":0.3},{"id":"s326","cost":35,"product":"Bracelet coeur 9k","ref":"984","weight":0.43},{"id":"s327","cost":24,"product":"Pendentif licorne","ref":"985","weight":0.42},{"id":"s329","cost":45,"product":"Bague oz","ref":"987","weight":0.95},{"id":"s330","cost":9,"product":"Pendentif love 9k","ref":"988","weight":0.28},{"id":"s331","cost":26,"product":"Collier lauréat 9k","ref":"989","weight":0.57},{"id":"s332","cost":24,"product":"Pendentif Arbre de vie","ref":"990","weight":1.1},{"id":"s333","cost":19,"product":"Pendentif coeur oz 14k","ref":"991","weight":0.7},{"id":"s334","cost":12,"product":"Pendentif turquoise 8k","ref":"992","weight":0.88},{"id":"s335","cost":29,"product":"Percing nombril 9k","ref":"993","weight":0.24},{"id":"s336","cost":100,"product":"Collier étoile pierres vertes","ref":"994","weight":2.2},{"id":"s337","cost":160,"product":"Bague clozo","ref":"995","weight":2.34},{"id":"s338","cost":50,"product":"Alliance 2 ors 9k","ref":"997","weight":0.95},{"id":"s339","cost":16,"product":"Dormeuse étoile laquée pailleté","ref":"1000","weight":0.65},{"id":"s340","cost":6,"product":"Collier cordon fée","ref":"1001","weight":1.1},{"id":"s341","cost":35,"product":"Dormeuse licorne","ref":"1003","weight":0.63},{"id":"s342","cost":15,"product":"Bracelet double coeur 9k","ref":"1004","weight":0.25},{"id":"s343","cost":10,"product":"Bo pendente céramique or blanc","ref":"1006","weight":0.9},{"id":"s346","cost":57,"product":"Collier solitaire Diam's","ref":"1010","weight":1.7},{"id":"s347","cost":119,"product":"Collier éventail","ref":"1011","weight":1.82},{"id":"s348","cost":210,"product":"Bague Mauboussin Kyanite Diam's","ref":"1012","weight":3.5},{"id":"s349","cost":119,"product":"Bo résine diam's style clozeau","ref":"1013","weight":2.17},{"id":"tfutqzngtkek2mm5vdk2","cost":66,"product":"Pendentif Diam's","ref":"595","weight":1.45},{"id":"tqsxwu9cizo67dup8rzu","cost":9,"product":"Bague solitaire 9 k oz","ref":"545","weight":0.54},{"id":"v5em5s9ukwvgbaafpm6e","cost":30,"product":"Pendentif perles oz","ref":"1025","weight":0.57},{"id":"vlpbxpu90ad22cyizxys","cost":45,"product":"Pendentif 9k arbre de vie diam's","ref":"1039","weight":0.6},{"id":"w061dkh2fqzy8cp1rng8","cost":24,"product":"Bo serpent 9k","ref":"1005","weight":0.33},{"id":"wcncoyfgup4zx6aur669","cost":53,"product":"bague diam's noire","ref":"139","weight":2.7}],"sales":[{"id":"003spse93l1emd6r2u1q","accountId":"acc-sasachacha","cost":52,"date":"2026-09-23","month":"2026-09","price":90,"product":"Bracelt or rose 9k","ref":"986","weight":0.83},{"id":"0edwybu69yb4cialigmh","accountId":"acc-sasachacha","cost":15,"date":"2026-09-23","month":"2026-09","price":300,"product":"chaine maille gourmette","ref":"883","weight":2.44},{"id":"1vzwwwcg6u2a16j7m7lz","accountId":"acc-yamizami","cost":43,"date":"2026-09-23","month":"2026-09","price":98,"product":"Bo topaze 9k","ref":"941","weight":0.48},{"id":"2a5r2710gtdlg8mo833p","accountId":"acc-mh7183","cost":19,"date":"2026-09-23","month":"2026-09","price":75,"product":"Bo Arbre de vie oz","ref":"1030","weight":0.8},{"id":"2lh4c03reg37w9owkm32","accountId":"acc-konoha","cost":50,"date":"2026-09-07","month":"2026-09","price":139,"product":"Chaine maille cheval","ref":"998","weight":1},{"id":"2te1yam4ntlfr259fyaz","accountId":"acc-sasachacha","cost":23,"date":"2026-09-23","month":"2026-09","price":40,"product":"Créoles perles 9k","ref":"688","weight":0.4},{"id":"3gmimxj6tfcij71mts4s","accountId":"acc-mh7183","cost":46,"date":"2026-09-23","month":"2026-09","price":110,"product":"Chaine corde 9k","ref":"887","weight":0.66},{"id":"4uyjosswgr8k8jj6xoei","accountId":"acc-sasachacha","cost":162,"date":"2026-09-12","month":"2026-09","price":300,"product":"Bague Rubisdiam's","ref":"502","weight":2.44},{"id":"59tyym7pjom4lhd19l2c","accountId":"acc-sasachacha","cost":12,"date":"2026-09-23","month":"2026-09","price":150,"product":"Pendentif coeur 2 ors","ref":"846","weight":1.21},{"id":"6m2vg5lf2slqqsxdo71e","accountId":"acc-sasachacha","cost":20,"date":"2026-09-07","month":"2026-09","price":70,"product":"Chaine ob 9k","ref":"996","weight":0.52},{"id":"7cg8c6t52chq11266kfi","accountId":"acc-mh7183","cost":10,"date":"2026-09-23","month":"2026-09","price":47,"product":"Pendentif topaze 9k","ref":"759","weight":0.33},{"id":"c2jciqrfso8b905xc3z8","accountId":"acc-sasachacha","cost":5,"date":"2026-09-07","month":"2026-09","price":40,"product":"Pendentif Améthiste","ref":"999","weight":0.2},{"id":"ddnscf8mc9a7dtaq9zoc","accountId":"acc-yamizami","cost":180,"date":"2026-09-07","month":"2026-09","price":320,"product":"bo diamant","ref":"297","weight":2.7},{"id":"evdnfn8rcihkhknty9fs","accountId":"acc-konoha","cost":20,"date":"2026-09-07","month":"2026-09","price":50,"product":"Pendentif coeur oz","ref":"901","weight":0.3},{"id":"hflafc1iv6q9xrbq8zg6","accountId":"acc-mh7183","cost":40,"date":"2026-09-07","month":"2026-09","price":70,"product":"Parure cristaux 9k","ref":"650","weight":0.7},{"id":"hh94l4kesce5ylovje2e","accountId":"acc-mh7183","cost":7,"date":"2026-09-12","month":"2026-09","price":150,"product":"Chaine Venitienne","ref":"834","weight":1.26},{"id":"hp6gbxgktzc4gxitafng","accountId":"acc-sasachacha","cost":27,"date":"2026-09-23","month":"2026-09","price":99,"product":"Bo saphir 9k","ref":"1008","weight":0.4},{"id":"j65v9fbabdpuat2311qj","accountId":"acc-konoha","cost":25,"date":"2026-09-12","month":"2026-09","price":89,"product":"Chaine maill gourmette","ref":"818","weight":0.87},{"id":"k1wsa6cc5lfi2z1snhyf","accountId":"acc-konoha","cost":112,"date":"2026-09-07","month":"2026-09","price":260,"product":"Bague saphir Diamant","ref":"949","weight":1.84},{"id":"k28zb7glq88ynr4vsu6f","accountId":"acc-konoha","cost":30,"date":"2026-09-12","month":"2026-09","price":99,"product":"Pendentif 2 ors arbre améthyste","ref":"1009","weight":0.65},{"id":"lqm2ynuvt2a03o30em82","accountId":"acc-konoha","cost":8,"date":"2026-09-12","month":"2026-09","price":100,"product":"Pendentif Amethyste","ref":"1016","weight":0.55},{"id":"nnmef03igv6ret3xjgju","accountId":"acc-yamizami","cost":5,"date":"2026-09-23","month":"2026-09","price":30,"product":"Collier fil transparent 9k","ref":"962","weight":0.3},{"id":"pg5svctjoz4xdm8bavtn","accountId":"acc-yamizami","cost":24,"date":"2026-09-12","month":"2026-09","price":145,"product":"Pedentif 2 ors pierres vertes","ref":"1020","weight":0.85},{"id":"sr516t5sogmjof5hwyq1","accountId":"acc-konoha","cost":13,"date":"2026-09-07","month":"2026-09","price":50,"product":"Bo crochet oz","ref":"1002","weight":0.33},{"id":"v001","cost":88,"date":null,"month":"2026-08","price":235,"product":"collier oz","ref":"#046","weight":2.2},{"id":"v002","cost":87,"date":null,"month":"2026-08","price":190,"product":"bague aigue marine","ref":"#050","weight":1.7},{"id":"v003","cost":40,"date":null,"month":"2026-08","price":89,"product":"Pendentif cage perle","ref":"#1014","weight":0.57},{"id":"v004","cost":10,"date":null,"month":"2026-08","price":110,"product":"Bracelet turquoise 8k","ref":"#1015","weight":0.5},{"id":"v005","cost":57,"date":null,"month":"2026-08","price":200,"product":"bague saphir oz","ref":"#221","weight":2.11},{"id":"v006","cost":33,"date":null,"month":"2026-08","price":62,"product":"bague topaze 9k","ref":"#376","weight":0.54},{"id":"v007","cost":100,"date":null,"month":"2026-08","price":340,"product":"Bo chimento","ref":"#474","weight":2.6},{"id":"v008","cost":56,"date":null,"month":"2026-08","price":100,"product":"Collier saphir 9k","ref":"#515","weight":0.87},{"id":"v009","cost":109,"date":null,"month":"2026-08","price":170,"product":"Bague saphir","ref":"#530","weight":1.45},{"id":"v00s82wdz8yqad4wks66","accountId":"acc-sasachacha","cost":19,"date":"2026-09-07","month":"2026-09","price":130,"product":"Bo infini 2 ors Améthyste","ref":"1007","weight":1},{"id":"v010","cost":40,"date":null,"month":"2026-08","price":60,"product":"Bague topaze 9k","ref":"#612","weight":0.42},{"id":"v011","cost":16,"date":null,"month":"2026-08","price":200,"product":"Collier princesse 9k oz","ref":"#616","weight":1.3},{"id":"v012","cost":50,"date":null,"month":"2026-08","price":145,"product":"collier infini oz 14k","ref":"#639","weight":1.52},{"id":"v013","cost":31,"date":null,"month":"2026-08","price":60,"product":"o crochet coeur 9k","ref":"#656","weight":0.38},{"id":"v014","cost":187,"date":null,"month":"2026-08","price":339,"product":"BBague Art déco Emeuraudes","ref":"#704","weight":2.15},{"id":"v015","cost":20,"date":null,"month":"2026-08","price":50,"product":"Bo boules sworovski 9k","ref":"#721","weight":0.25},{"id":"v016","cost":35,"date":null,"month":"2026-08","price":70,"product":"Chaine + pendentif topaze","ref":"#730","weight":0.4},{"id":"v017","cost":14,"date":null,"month":"2026-08","price":40,"product":"Bo diam's 9k","ref":"#732","weight":0.22},{"id":"v018","cost":1,"date":null,"month":"2026-08","price":65,"product":"Pendentif topaze","ref":"#745","weight":0.5},{"id":"v019","cost":15,"date":null,"month":"2026-08","price":60,"product":"Bo oz","ref":"#746","weight":0.6},{"id":"v020","cost":37,"date":null,"month":"2026-08","price":80,"product":"Pendentif oz vert blanc","ref":"#771","weight":0.45},{"id":"v021","cost":26,"date":null,"month":"2026-08","price":60,"product":"Pendentif","ref":"#773","weight":0.57},{"id":"v022","cost":16,"date":null,"month":"2026-08","price":50,"product":"Bracelet saphir 9k","ref":"#784","weight":0.22},{"id":"v023","cost":69,"date":null,"month":"2026-08","price":100,"product":"Bo corail 8k","ref":"#795","weight":0.9},{"id":"v024","cost":35,"date":null,"month":"2026-08","price":70,"product":"Bague Tahiti 9 k","ref":"#825","weight":0.5},{"id":"v025","cost":29,"date":null,"month":"2026-08","price":50,"product":"Penentif lot coeur","ref":"#837","weight":0.5},{"id":"v026","cost":77,"date":null,"month":"2026-08","price":90,"product":"Bo boule filigrame","ref":"#847","weight":0.92},{"id":"v027","cost":24,"date":null,"month":"2026-08","price":50,"product":"Collier pampille oz 9k","ref":"#854","weight":0.3},{"id":"v028","cost":35,"date":null,"month":"2026-08","price":98,"product":"Bague pierre rose","ref":"#856","weight":0.88},{"id":"v029","cost":28,"date":null,"month":"2026-08","price":170,"product":"Collier gouttes topazes","ref":"#898","weight":1.6},{"id":"v030","cost":24,"date":null,"month":"2026-08","price":130,"product":"Bo vintage Pierre blanche","ref":"#911","weight":0.8},{"id":"v031","cost":14,"date":null,"month":"2026-08","price":110,"product":"Bo oz vert","ref":"#914","weight":0.4},{"id":"v032","cost":35,"date":null,"month":"2026-08","price":129,"product":"Bo vintage jais","ref":"#915","weight":0.8},{"id":"v033","cost":58,"date":null,"month":"2026-08","price":139,"product":"Collier 2 ors oz","ref":"#922","weight":0.9},{"id":"v034","cost":45,"date":null,"month":"2026-08","price":115,"product":"Pendentif Tahiti Diam's","ref":"#924","weight":0.35},{"id":"v035","cost":49,"date":null,"month":"2026-08","price":99,"product":"Bo rond 2 ors oz","ref":"#929","weight":0.7},{"id":"v036","cost":29,"date":null,"month":"2026-08","price":89,"product":"Bo spirale 2 ors","ref":"#930","weight":0.63},{"id":"v037","cost":14,"date":null,"month":"2026-08","price":100,"product":"Piercing nombril rose","ref":"#942","weight":1},{"id":"v038","cost":19,"date":null,"month":"2026-08","price":72,"product":"Bo rubis coeur","ref":"#952","weight":0.6},{"id":"v039","cost":7,"date":null,"month":"2026-08","price":290,"product":"Gourmette 2 ors","ref":"#953","weight":2.54},{"id":"v040","cost":19,"date":null,"month":"2026-08","price":99,"product":"Bo corde 9k","ref":"#954","weight":0.62},{"id":"v041","cost":9,"date":null,"month":"2026-08","price":29,"product":"Pendentif licorne 9k","ref":"#956","weight":0.17},{"id":"v042","cost":13,"date":null,"month":"2026-08","price":69,"product":"Collier fil transparant oz","ref":"#963","weight":0.4},{"id":"v043","cost":19,"date":null,"month":"2026-08","price":75,"product":"Bo goutte oz","ref":"#964","weight":0.65},{"id":"v044","cost":7,"date":null,"month":"2026-08","price":115,"product":"Bracelet arbre de vie strass","ref":"#967","weight":0.9},{"id":"v045","cost":13,"date":null,"month":"2026-08","price":33,"product":"Bracelt cordon licorne 9k","ref":"#970","weight":0.2},{"id":"v046","cost":29,"date":null,"month":"2026-08","price":60,"product":"Pendentif coeur oz","ref":"#972","weight":0.35},{"id":"v047","cost":13,"date":null,"month":"2026-08","price":89,"product":"Pendentif saphir 2ors","ref":"#975","weight":0.62},{"id":"v048","cost":10,"date":null,"month":"2026-08","price":105,"product":"Pendentif topaze","ref":"#976","weight":0.65},{"id":"v049","cost":45,"date":null,"month":"2026-08","price":189,"product":"Chaîne","ref":"#979","weight":1.69},{"id":"v050","cost":12,"date":null,"month":"2026-08","price":110,"product":"Pendentif turquoise 8k","ref":"#992","weight":0.88},{"id":"v051","cost":70,"month":"2025-10","price":165,"product":"bagues saphir","ref":"#326","weight":1.68},{"id":"v052","cost":17,"month":"2025-10","price":350,"product":"bracelet filigrane","ref":"#040","weight":4.3},{"id":"v053","cost":36,"month":"2025-10","price":79,"product":"collier perles","ref":"#186","weight":1.5},{"id":"v054","cost":13,"month":"2025-10","price":100,"product":"creoles torsadés","ref":"#148","weight":1.1},{"id":"v055","cost":25,"month":"2025-10","price":100,"product":"pendentif","ref":"#068","weight":1.06},{"id":"v056","cost":15,"month":"2025-10","price":55,"product":"Bo cristaux","ref":"#299","weight":0.7},{"id":"v057","cost":5,"month":"2025-10","price":95,"product":"bo perles","ref":"#191","weight":1.17},{"id":"v058","cost":14,"month":"2025-10","price":75,"product":"penden 2025 saphir","ref":"#018","weight":0.76},{"id":"v059","cost":30,"month":"2025-10","price":100,"product":"bo cristal","ref":"#032","weight":1.43},{"id":"v060","cost":30,"month":"2025-10","price":120,"product":"bague oz","ref":"#325","weight":1.14},{"id":"v061","cost":35,"month":"2025-10","price":109,"product":"Parure perles tahiti 9k","ref":"#358","weight":1},{"id":"v062","cost":12,"month":"2025-10","price":50,"product":"bo perles noirs et blnaches","ref":"#300","weight":0.8},{"id":"v063","cost":28,"month":"2025-10","price":180,"product":"bracelet vintage perles","ref":"#034","weight":1.8},{"id":"v064","cost":72,"month":"2025-10","price":130,"product":"Bracelet pierre vert","ref":"#008","weight":1.2},{"id":"v065","cost":24,"month":"2025-10","price":80,"product":"bo corail","ref":"#026","weight":1.34},{"id":"v066","cost":29,"month":"2025-10","price":84,"product":"pendentif 2 ors","ref":"#194","weight":0.72},{"id":"v067","cost":95,"month":"2025-10","price":190,"product":"Bracelet MAB","ref":"#249","weight":1.84},{"id":"v068","cost":56,"month":"2025-10","price":120,"product":"bracelet rivière 9k","ref":"#318","weight":1.5},{"id":"v069","cost":11,"month":"2025-10","price":50,"product":"pendentif globe 1","ref":"#353","weight":0.15},{"id":"v070","cost":11,"month":"2025-10","price":69,"product":"pendentif globe 2","ref":"#354","weight":0.15},{"id":"v071","cost":20,"month":"2025-10","price":60,"product":"pendentif topaze","ref":"#342","weight":0.47},{"id":"v072","cost":40,"month":"2025-10","price":80,"product":"bo topaze","ref":"#343","weight":1.29},{"id":"v073","cost":24,"month":"2025-10","price":129,"product":"bo trilogie rubis","ref":"#360","weight":1.21},{"id":"v074","cost":40,"month":"2025-10","price":340,"product":"Bracelet charm coeur","ref":"#373","weight":3.65},{"id":"v075","cost":18,"month":"2025-10","price":60,"product":"bo carré oz","ref":"#217","weight":1.15},{"id":"v076","cost":12,"month":"2025-10","price":31,"product":"bracelet licorne 9k","ref":"#370","weight":0.34},{"id":"v077","cost":11,"month":"2025-10","price":29,"product":"bo licorne","ref":"#161","weight":0.37},{"id":"v078","cost":20,"month":"2025-10","price":85,"product":"Parure papillon","ref":"#389","weight":1},{"id":"v079","cost":56,"month":"2025-10","price":100,"product":"bo 2 ors coeur saphir","ref":"#388","weight":1.18},{"id":"v080","cost":49,"month":"2025-11","price":89,"product":"bague perle","ref":"#150","weight":0.99},{"id":"v081","cost":15,"month":"2025-11","price":46,"product":"collier 9k","ref":"#151","weight":0.5},{"id":"v082","cost":65,"month":"2025-11","price":115,"product":"bo MAB","ref":"#248","weight":1.28},{"id":"v083","cost":160,"month":"2025-11","price":275,"product":"collier rubis","ref":"#322","weight":2.33},{"id":"v084","cost":5,"month":"2025-11","price":39,"product":"bague infini 9k","ref":"#339","weight":0.38},{"id":"v085","cost":39,"month":"2025-11","price":140,"product":"Bo comete Amathyste","ref":"#234","weight":3.7},{"id":"v086","cost":18,"month":"2025-11","price":65,"product":"Collier or rose 9k","ref":"#410","weight":0.64},{"id":"v087","cost":25,"month":"2025-11","price":130,"product":"Bo marguerite rubis","ref":"#411","weight":0.88},{"id":"v088","cost":22,"month":"2025-11","price":80,"product":"bo flocon","ref":"#337","weight":0.81},{"id":"v089","cost":56,"month":"2025-11","price":130,"product":"Dormeuse perles","ref":"#371","weight":1.65},{"id":"v090","cost":40,"month":"2025-11","price":89,"product":"Bo perles","ref":"#412","weight":0.6},{"id":"v091","cost":20,"month":"2025-11","price":89,"product":"Parure paillon","ref":"#413","weight":0.99},{"id":"v092","cost":28,"month":"2025-11","price":100,"product":"p perles rose quartz","ref":"#025","weight":1.2},{"id":"v093","cost":29,"month":"2025-11","price":75,"product":"bague coeur oz MAB","ref":"#287","weight":1.01},{"id":"v094","cost":30,"month":"2025-11","price":80,"product":"bo rubis","ref":"#351","weight":0.32},{"id":"v095","cost":14,"month":"2025-11","price":55,"product":"collier coeur 9k","ref":"#399","weight":0.6},{"id":"v096","cost":29,"month":"2025-11","price":64,"product":"bo vintage améthyste 9k","ref":"#349","weight":0.64},{"id":"v097","cost":19,"month":"2025-11","price":50,"product":"bracelet cordon","ref":"#003","weight":0.32},{"id":"v098","cost":20,"month":"2025-11","price":50,"product":"pendentif vintage améthy 9k","ref":"#345","weight":0.45},{"id":"v099","cost":8,"month":"2025-11","price":43,"product":"bo crochet perle 9k","ref":"#364","weight":0.4},{"id":"v100","cost":66,"month":"2025-11","price":155,"product":"Dormeuse perles","ref":"#414","weight":1.65},{"id":"v101","cost":24,"month":"2025-11","price":59,"product":"bo 2 ors 9k","ref":"#362","weight":0.53},{"id":"v102","cost":43,"month":"2025-11","price":100,"product":"bo topaze carré","ref":"#137","weight":1},{"id":"v103","cost":20,"month":"2025-11","price":50,"product":"Bo lapinou2 ors","ref":"#421","weight":0.44},{"id":"v104","cost":36,"month":"2025-11","price":80,"product":"bague vintage améthyste 9k","ref":"#340","weight":0.78},{"id":"v105","cost":120,"month":"2025-11","price":350,"product":"bague rubis diams","ref":"#122","weight":3.38},{"id":"v106","cost":56,"month":"2025-11","price":110,"product":"bo milluna diam's","ref":"#141","weight":1.14},{"id":"v107","cost":50,"month":"2025-12","price":285,"product":"pendentif","ref":"#099","weight":4.65},{"id":"v108","cost":75,"month":"2025-12","price":150,"product":"bo quartz","ref":"#085","weight":1.2},{"id":"v109","cost":20,"month":"2025-12","price":50,"product":"pendentif perle 9k","ref":"#146","weight":0.75},{"id":"v110","cost":24,"month":"2025-12","price":80,"product":"demi creole oz","ref":"#283","weight":1.16},{"id":"v111","cost":16,"month":"2025-12","price":140,"product":"Bo toi et moi perles","ref":"#395","weight":1.2},{"id":"v112","cost":12,"month":"2025-12","price":90,"product":"pendentif toi et moi","ref":"#397","weight":0.9},{"id":"v113","cost":53,"month":"2025-12","price":250,"product":"Bracelet Dauphin 9k","ref":"#402","weight":0.7},{"id":"v114","cost":25,"month":"2025-12","price":60,"product":"Bo crochet perles","ref":"#426","weight":0.65},{"id":"v115","cost":56,"month":"2025-12","price":180,"product":"Dormeuses vintage","ref":"#435","weight":1.69},{"id":"v116","cost":267,"month":"2025-12","price":500,"product":"Collier baccarat hortensia","ref":"#442","weight":3.5},{"id":"v117","cost":30,"month":"2025-12","price":130,"product":"bo pendante oz","ref":"#005","weight":1.5},{"id":"v118","cost":45,"month":"2025-12","price":140,"product":"alliance","ref":"#055","weight":1.42},{"id":"v119","cost":24,"month":"2025-12","price":55,"product":"Bo Murano","ref":"#393","weight":0.42},{"id":"v120","cost":30,"month":"2025-12","price":90,"product":"Bo milluna perles diam's","ref":"#427","weight":1},{"id":"v121","cost":16,"month":"2025-12","price":45,"product":"Pendentif murano","ref":"#428","weight":0.36},{"id":"v122","cost":52,"month":"2025-12","price":150,"product":"Dormeuse topaze","ref":"#444","weight":1.05},{"id":"v123","cost":9,"month":"2025-12","price":50,"product":"Bo turquoise","ref":"#457","weight":0.3},{"id":"v124","cost":45,"month":"2025-12","price":99,"product":"Bague rubis 9k","ref":"#439","weight":0.44},{"id":"v125","cost":31,"month":"2025-12","price":90,"product":"Bague coeur topaze","ref":"#423","weight":0.9},{"id":"v126","cost":40,"month":"2025-12","price":110,"product":"Collier coeur topaze","ref":"#429","weight":1.2},{"id":"v127","cost":56,"month":"2025-12","price":250,"product":"bo topaze","ref":"#048","weight":2.5},{"id":"v128","cost":15,"month":"2025-12","price":35,"product":"Bo diamés 9 k","ref":"#437","weight":0.36},{"id":"v129","cost":20,"month":"2025-12","price":130,"product":"Bo 2 ors","ref":"#438","weight":1.57},{"id":"v130","cost":66,"month":"2025-12","price":160,"product":"Pendentif coeur saphir et diam's","ref":"#390","weight":1.6},{"id":"v131","cost":45,"month":"2025-12","price":100,"product":"Bo topaze","ref":"#418","weight":1},{"id":"v132","cost":7,"month":"2025-12","price":250,"product":"bo vintage perles","ref":"#311","weight":2.2},{"id":"v133","cost":24,"month":"2025-12","price":65,"product":"Bo perles","ref":"#415","weight":0.7},{"id":"v134","cost":35,"month":"2025-12","price":100,"product":"collier coeur","ref":"#387","weight":1},{"id":"v135","cost":61,"month":"2025-12","price":90,"product":"Pendentif fleur Améthyste","ref":"#454","weight":0.89},{"id":"v136","cost":56,"month":"2025-12","price":190,"product":"bo topaze","ref":"#113","weight":1.98},{"id":"v137","cost":45,"month":"2025-12","price":90,"product":"creoles petit diamètre","ref":"#279","weight":1.18},{"id":"v138","cost":34,"month":"2025-12","price":140,"product":"bo Quartz","ref":"#175","weight":1.15},{"id":"v139","cost":35,"month":"2025-12","price":75,"product":"Bo 2 ors 9k","ref":"#485","weight":0.62},{"id":"v140","cost":17,"month":"2025-12","price":50,"product":"Pendentif coeur","ref":"#431","weight":0.43},{"id":"v141","cost":15,"month":"2025-12","price":60,"product":"bo perles","ref":"#424","weight":0.5},{"id":"v142","cost":15,"month":"2025-12","price":55,"product":"Bo topaze 9k","ref":"#417","weight":0.57},{"id":"v143","cost":25,"month":"2025-12","price":50,"product":"Bague diam's9k","ref":"#477","weight":0.5},{"id":"v144","cost":11,"month":"2025-12","price":55,"product":"bague trilogie 9k","ref":"#264","weight":1.16},{"id":"v145","cost":44,"month":"2025-12","price":120,"product":"bracelet perle","ref":"#020","weight":1.11},{"id":"v146","cost":35,"month":"2025-12","price":90,"product":"Bo 3 tiges OZ","ref":"#468","weight":0.9},{"id":"v147","cost":15,"month":"2025-12","price":130,"product":"Chaine 10k","ref":"#400","weight":1.31},{"id":"v148","cost":0.6,"month":"2025-12","price":165,"product":"Bague Morgane Bello","ref":"#465","weight":1.57},{"id":"v149","cost":16,"month":"2025-12","price":70,"product":"Bo couronne perles","ref":"#466","weight":0.5},{"id":"v150","cost":35,"month":"2025-12","price":160,"product":"Bo perles Alpha","ref":"#422","weight":1.1},{"id":"v151","cost":56,"month":"2025-12","price":125,"product":"Parure Nacre","ref":"#475","weight":0.9},{"id":"v152","cost":25,"month":"2025-12","price":139,"product":"camée","ref":"#261","weight":1.35},{"id":"v153","cost":10,"month":"2025-12","price":58,"product":"Bo dauphin","ref":"#451","weight":0.58},{"id":"v154","cost":46,"month":"2025-12","price":100,"product":"pendentif inspi chopard","ref":"#291","weight":1.1},{"id":"v155","cost":43,"month":"2025-12","price":87,"product":"Pendentif OZ","ref":"#398","weight":0.77},{"id":"v156","cost":17,"month":"2025-12","price":55,"product":"bo coeur double","ref":"#391","weight":0.65},{"id":"v157","cost":15,"month":"2025-12","price":50,"product":"Bo dormeuse","ref":"#416","weight":0.7},{"id":"v158","cost":40,"month":"2026-01","price":85,"product":"Bague solitaire 9k","ref":"#508","weight":0.73},{"id":"v159","cost":30,"month":"2026-01","price":75,"product":"Parure perles 9k","ref":"#506","weight":0.7},{"id":"v160","cost":29,"month":"2026-01","price":60,"product":"Bague 9k","ref":"#507","weight":0.5},{"id":"v161","cost":13,"month":"2026-01","price":55,"product":"Collier trilogie 9k","ref":"#476","weight":0.64},{"id":"v162","cost":46,"month":"2026-01","price":160,"product":"Créoles perles boule","ref":"#488","weight":1.12},{"id":"v163","cost":58,"month":"2026-01","price":100,"product":"bo perle diam's","ref":"#284","weight":1.46},{"id":"v164","cost":40,"month":"2026-01","price":110,"product":"bo pendentif onyx","ref":"#367","weight":1},{"id":"v165","cost":21,"month":"2026-01","price":215,"product":"pendentif étoile de mer rubis","ref":"#257","weight":1.89},{"id":"v166","cost":46,"month":"2026-01","price":145,"product":"bo Alpa","ref":"#031","weight":1.96},{"id":"v167","cost":25,"month":"2026-01","price":70,"product":"Bracelet or caoutchou","ref":"#420","weight":0.8},{"id":"v168","cost":11,"month":"2026-01","price":39,"product":"Bracelet 9k","ref":"#483","weight":0.25},{"id":"v169","cost":18,"month":"2026-01","price":50,"product":"Créoles 2 ors 9k","ref":"#487","weight":0.38},{"id":"v170","cost":160,"month":"2026-01","price":280,"product":"médaille Augis rubis","ref":"#347","weight":2.24},{"id":"v171","cost":87,"month":"2026-01","price":300,"product":"bague","ref":"#077","weight":3},{"id":"v172","cost":31,"month":"2026-01","price":60,"product":"Collier saphir 9k","ref":"#441","weight":0.58},{"id":"v173","cost":11,"month":"2026-01","price":80,"product":"Bracelet perles Kiarra","ref":"#372","weight":0.8},{"id":"v174","cost":35,"month":"2026-01","price":80,"product":"Bracelet coeur et diam's 9k","ref":"#406","weight":0.37},{"id":"v175","cost":25,"month":"2026-01","price":60,"product":"Pendentif Coeur oz","ref":"#495","weight":0.62},{"id":"v176","cost":14,"month":"2026-01","price":180,"product":"Collier goutte","ref":"#529","weight":1.6},{"id":"v177","cost":35,"month":"2026-01","price":70,"product":"Pendentif oz carré","ref":"#486","weight":0.7},{"id":"v178","cost":35,"month":"2026-01","price":120,"product":"Pendentif perle de tahiti","ref":"#453","weight":0.5},{"id":"v179","cost":24,"month":"2026-01","price":380,"product":"bo diam's vintage","ref":"#274","weight":3.07},{"id":"v180","cost":50,"month":"2026-01","price":129,"product":"Bo Corail litige","ref":"#332","weight":0.8},{"id":"v181","cost":12,"month":"2026-01","price":50,"product":"bo oz","ref":"#238","weight":0.72},{"id":"v182","cost":66,"month":"2026-01","price":195,"product":"Bague 2 ors pierre oz","ref":"#521","weight":1.7},{"id":"v183","cost":19,"month":"2026-01","price":80,"product":"Pendenti coeur Améthyste","ref":"#447","weight":0.5},{"id":"v184","cost":20,"month":"2026-01","price":45,"product":"Bo bébé papillon","ref":"#538","weight":0.4},{"id":"v185","cost":14,"month":"2026-01","price":76,"product":"bo perles","ref":"#377","weight":1.04},{"id":"v186","cost":24,"month":"2026-01","price":60,"product":"Collier infini diam's 9k","ref":"#433","weight":0.64},{"id":"v187","cost":44,"month":"2026-01","price":220,"product":"pendentif coeur topaze","ref":"#286","weight":1.63},{"id":"v188","cost":250,"month":"2026-01","price":810,"product":"bague garel","ref":"#173","weight":6.45},{"id":"v189","cost":13,"month":"2026-01","price":45,"product":"bo hématite","ref":"#503","weight":0.5},{"id":"v190","cost":15,"month":"2026-01","price":115,"product":"bo torsadé","ref":"#361","weight":1.21},{"id":"v191","cost":14,"month":"2026-02","price":69,"product":"Bracelet coloré 9k","ref":"#496","weight":0.5},{"id":"v192","cost":26,"month":"2026-02","price":65,"product":"bo coeur oz rose","ref":"#520","weight":0.65},{"id":"v193","cost":24,"month":"2026-02","price":40,"product":"Bo 2 ors carré 9k","ref":"#511","weight":0.33},{"id":"v194","cost":61,"month":"2026-02","price":260,"product":"bague vintage","ref":"#069","weight":1.66},{"id":"v195","cost":80,"month":"2026-02","price":155,"product":"collier onyx","ref":"#366","weight":1.5},{"id":"v196","cost":60,"month":"2026-02","price":205,"product":"pendentif Tahiti","ref":"#586","weight":0.9},{"id":"v197","cost":18,"month":"2026-02","price":55,"product":"Bracelet cordon","ref":"#587","weight":0.3},{"id":"v198","cost":109,"month":"2026-02","price":260,"product":"Collier 3 ors Diam's","ref":"#498","weight":2.5},{"id":"v199","cost":8,"month":"2026-02","price":340,"product":"bo vintage solitaire diam's","ref":"#295","weight":2.22},{"id":"v200","cost":19,"month":"2026-02","price":80,"product":"Bo rubis","ref":"#524","weight":0.69},{"id":"v201","cost":9,"month":"2026-02","price":70,"product":"pendentif 2 ors","ref":"#365","weight":0.59},{"id":"v202","cost":66,"month":"2026-02","price":100,"product":"Bague or blanc oz fleur","ref":"#522","weight":0.9},{"id":"v203","cost":12,"month":"2026-02","price":80,"product":"Bo flocon","ref":"#600","weight":0.82},{"id":"v204","cost":9,"month":"2026-02","price":59,"product":"Bo carré vert","ref":"#590","weight":0.66},{"id":"v205","cost":20,"month":"2026-02","price":90,"product":"Bague boite or rose 9 k","ref":"#557","weight":0.56},{"id":"v206","cost":182,"month":"2026-02","price":350,"product":"Collier Emeraude","ref":"#482","weight":3.08},{"id":"v207","cost":55,"month":"2026-02","price":160,"product":"pendentif trèfle coloré","ref":"#292","weight":2.22},{"id":"v208","cost":30,"month":"2026-02","price":49,"product":"Créoles Torsadé 9k","ref":"#568","weight":0.37},{"id":"v209","cost":35,"month":"2026-02","price":110,"product":"Bo pierre citrine quartz","ref":"#577","weight":0.8},{"id":"v210","cost":35,"month":"2026-02","price":105,"product":"Bo fleur perle","ref":"#583","weight":0.8},{"id":"v211","cost":40,"month":"2026-02","price":105,"product":"creoles Grande 9k","ref":"#386","weight":0.85},{"id":"v212","cost":14,"month":"2026-02","price":65,"product":"Bo crochet perles","ref":"#575","weight":0.8},{"id":"v213","cost":5,"month":"2026-03","price":200,"product":"bo pierres couleur","ref":"#144","weight":2.37},{"id":"v214","cost":55,"month":"2026-03","price":160,"product":"pendentif trèfle coloré","ref":"#292","weight":2.22},{"id":"v215","cost":40,"month":"2026-03","price":105,"product":"creoles Grande 9k","ref":"#386","weight":0.85},{"id":"v216","cost":109,"month":"2026-03","price":230,"product":"Bague diam's Matty","ref":"#445","weight":1.91},{"id":"v217","cost":24,"month":"2026-03","price":89,"product":"Pendentif Diam's noir","ref":"#464","weight":0.75},{"id":"v218","cost":24,"month":"2026-03","price":89,"product":"Pendentif Diam's noir","ref":"#464b","weight":0.75},{"id":"v219","cost":182,"month":"2026-03","price":350,"product":"Collier Emeraude","ref":"#482","weight":3.08},{"id":"v220","cost":192,"month":"2026-03","price":320,"product":"Collier saphir 9k","ref":"#490","weight":2.61},{"id":"v221","cost":16,"month":"2026-03","price":45,"product":"Pendentif perle","ref":"#514","weight":0.15},{"id":"v222","cost":56,"month":"2026-03","price":120,"product":"Bo perled de tahiti","ref":"#523","weight":1},{"id":"v223","cost":24,"month":"2026-03","price":53,"product":"Pendentif 2 ors topaze 9k","ref":"#525","weight":0.31},{"id":"v224","cost":160,"month":"2026-03","price":330,"product":"Bague Camée","ref":"#537","weight":3.1},{"id":"v225","cost":36,"month":"2026-03","price":72,"product":"Créoles Maty 9k","ref":"#539","weight":0.27},{"id":"v226","cost":16,"month":"2026-03","price":64,"product":"Bo oz MAB","ref":"#543","weight":0.83},{"id":"v227","cost":46,"month":"2026-03","price":80,"product":"Bo vintage 8k","ref":"#548","weight":0.66},{"id":"v228","cost":29,"month":"2026-03","price":80,"product":"Piercing nombril","ref":"#551","weight":0.72},{"id":"v229","cost":20,"month":"2026-03","price":90,"product":"Bague boite or rose 9 k","ref":"#557","weight":0.56},{"id":"v230","cost":14,"month":"2026-03","price":60,"product":"Bo Coeur rose","ref":"#562","weight":0.63},{"id":"v231","cost":45,"month":"2026-03","price":110,"product":"Bo saphir","ref":"#564","weight":1.06},{"id":"v232","cost":30,"month":"2026-03","price":49,"product":"Créoles Torsadé 9k","ref":"#568","weight":0.37},{"id":"v233","cost":48,"month":"2026-03","price":80,"product":"Collier cordon coeur Hémathite","ref":"#572","weight":0.82},{"id":"v234","cost":14,"month":"2026-03","price":65,"product":"Bo crochet perles","ref":"#575","weight":0.8},{"id":"v235","cost":35,"month":"2026-03","price":110,"product":"Bo pierre citrine quartz","ref":"#577","weight":0.8},{"id":"v236","cost":5,"month":"2026-03","price":80,"product":"Bague Bello","ref":"#578","weight":0.7},{"id":"v237","cost":50,"month":"2026-03","price":125,"product":"Pendentif or rose Quartz","ref":"#580","weight":0.7},{"id":"v238","cost":35,"month":"2026-03","price":105,"product":"Bo fleur perle","ref":"#583","weight":0.8},{"id":"v239","cost":35,"month":"2026-03","price":80,"product":"Collier Topaze 9k","ref":"#588","weight":0.71},{"id":"v240","cost":45,"month":"2026-03","price":55,"product":"Collier en or rose neud 9k","ref":"#589","weight":0.43},{"id":"v241","cost":39,"month":"2026-03","price":149,"product":"Bracelet 2 rangs perles","ref":"#592","weight":1},{"id":"v242","cost":35,"month":"2026-03","price":80,"product":"Pendentif goutte Amétyste","ref":"#596","weight":0.6},{"id":"v243","cost":9,"month":"2026-03","price":60,"product":"Bracelet Hemathiste 9k","ref":"#605","weight":0.35},{"id":"v244","cost":24,"month":"2026-03","price":60,"product":"bo coeur oz","ref":"#609","weight":0.5},{"id":"v245","cost":10,"month":"2026-03","price":75,"product":"Bo pampille","ref":"#610","weight":0.5},{"id":"v246","cost":21,"month":"2026-03","price":40,"product":"Bo topaze 9k","ref":"#618","weight":0.3},{"id":"v247","cost":40,"month":"2026-03","price":110,"product":"Bo feuille nacre","ref":"#623","weight":1},{"id":"v248","cost":9,"month":"2026-03","price":110,"product":"Bo feuille nacre","ref":"#627","weight":0.9},{"id":"v249","cost":23,"month":"2026-03","price":169,"product":"Chaine boule","ref":"#629","weight":1.48},{"id":"v250","cost":19,"month":"2026-03","price":70,"product":"Bo perles","ref":"#633","weight":0.35},{"id":"v251","cost":12,"month":"2026-03","price":30,"product":"Bo plume 9k","ref":"#635","weight":0.26},{"id":"v252","cost":19,"month":"2026-03","price":60,"product":"bo coeur oz","ref":"#636","weight":0.6},{"id":"v253","cost":11,"month":"2026-03","price":60,"product":"Pendentif poisson","ref":"#659","weight":0.96},{"id":"v254","cost":12,"month":"2026-03","price":75,"product":"Pendentif nacre","ref":"#660","weight":0.5},{"id":"v255","cost":114,"month":"2026-04","price":280,"product":"bague topaz","ref":"#047","weight":2.4},{"id":"v256","cost":35,"month":"2026-04","price":105,"product":"bo plume","ref":"#056","weight":0.93},{"id":"v257","cost":87,"month":"2026-04","price":300,"product":"collier","ref":"#086","weight":2.62},{"id":"v258","cost":31,"month":"2026-04","price":169,"product":"bague blue spirit","ref":"#096","weight":1.98},{"id":"v259","cost":45,"month":"2026-04","price":230,"product":"collier topaze","ref":"#131","weight":2.33},{"id":"v260","cost":77,"month":"2026-04","price":250,"product":"bague or gris","ref":"#241","weight":2.55},{"id":"v261","cost":35,"month":"2026-04","price":129,"product":"parure topaze","ref":"#265","weight":1.09},{"id":"v262","cost":15,"month":"2026-04","price":100,"product":"collier perles baroque","ref":"#271","weight":0.81},{"id":"v263","cost":20,"month":"2026-04","price":207,"product":"bo 2 ors saphir","ref":"#296","weight":2.04},{"id":"v264","cost":299,"month":"2026-04","price":540,"product":"collier mMauboussin","ref":"#363","weight":2.31},{"id":"v265","cost":25,"month":"2026-04","price":85,"product":"Bo perles","ref":"#434","weight":1},{"id":"v266","cost":26,"month":"2026-04","price":100,"product":"Pendentif","ref":"#452","weight":1.35},{"id":"v267","cost":19,"month":"2026-04","price":90,"product":"Bracelet coeur","ref":"#458","weight":0.99},{"id":"v268","cost":108,"month":"2026-04","price":225,"product":"Bague or saphir diam's","ref":"#461","weight":1.76},{"id":"v269","cost":129,"month":"2026-04","price":269,"product":"Collier arc en ciel multi pierres","ref":"#480","weight":1.3},{"id":"v270","cost":66,"month":"2026-04","price":300,"product":"Créole Diam's","ref":"#518","weight":2.9},{"id":"v271","cost":45,"month":"2026-04","price":128,"product":"BO pendante perles","ref":"#560","weight":0.7},{"id":"v272","cost":40,"month":"2026-04","price":82,"product":"Pendentif oz saphir","ref":"#571","weight":0.83},{"id":"v273","cost":160,"month":"2026-04","price":350,"product":"Collier Emmeraude Diam's","ref":"#576","weight":3.12},{"id":"v274","cost":18,"month":"2026-04","price":80,"product":"Bague diam's 9k","ref":"#599","weight":0.69},{"id":"v275","cost":109,"month":"2026-04","price":210,"product":"Créole MAB","ref":"#602","weight":1.96},{"id":"v276","cost":51,"month":"2026-04","price":135,"product":"Bo 2ors MAB","ref":"#607","weight":0.75},{"id":"v277","cost":151,"month":"2026-04","price":250,"product":"Bracelet 2 ors 9k","ref":"#614","weight":2},{"id":"v278","cost":88,"month":"2026-04","price":150,"product":"Bo saphir PUJOL","ref":"#621","weight":1.34},{"id":"v279","cost":93,"month":"2026-04","price":189,"product":"Bo saphir diam's crochet","ref":"#626","weight":1.26},{"id":"v280","cost":56,"month":"2026-04","price":260,"product":"Pendentif goutte 2 ors oz","ref":"#628","weight":2},{"id":"v281","cost":14,"month":"2026-04","price":60,"product":"Créoles ovales 9k","ref":"#669","weight":0.44},{"id":"v282","cost":30,"month":"2026-04","price":110,"product":"Bo pendente coeur","ref":"#677","weight":1.02},{"id":"v283","cost":24,"month":"2026-04","price":70,"product":"Bo crochet perles 9k","ref":"#678","weight":0.4},{"id":"v284","cost":9,"month":"2026-04","price":50,"product":"Pendentif venise","ref":"#691","weight":0.39},{"id":"v285","cost":8,"month":"2026-04","price":105,"product":"Pendentif 9k strass","ref":"#692","weight":0.22},{"id":"v286","cost":14,"month":"2026-04","price":100,"product":"Bo perles oz","ref":"#695","weight":0.6},{"id":"v287","cost":40,"month":"2026-04","price":85,"product":"Pendentif topaze","ref":"#696","weight":0.5},{"id":"v288","cost":9,"month":"2026-04","price":40,"product":"Bracelet cordon rose cercle","ref":"#699","weight":0.3},{"id":"v289","cost":16,"month":"2026-04","price":95,"product":"Bo crochet Oz","ref":"#701","weight":0.85},{"id":"v290","cost":7,"month":"2026-04","price":42,"product":"Pendentif Murano","ref":"#703","weight":0.42},{"id":"v291","cost":25,"month":"2026-04","price":105,"product":"Bo 3 coeurs oz","ref":"#705","weight":1.33},{"id":"v292","cost":29,"month":"2026-04","price":130,"product":"Parure perles","ref":"#715","weight":0.7},{"id":"v293","cost":5,"month":"2026-04","price":90,"product":"Pendentif Aigue Marine","ref":"#717","weight":0.64},{"id":"v294","cost":89,"month":"2026-04","price":300,"product":"Chaine Maille corde or blanc","ref":"#720","weight":2.85},{"id":"v295","cost":7,"month":"2026-04","price":60,"product":"Bo Arbre de vie 9k","ref":"#722","weight":0.54},{"id":"v296","cost":30,"month":"2026-04","price":105,"product":"Pendentif Topaze","ref":"#722b","weight":0.4},{"id":"v297","cost":78,"month":"2026-05","price":250,"product":"Bague marquise aigue marine","ref":"#117","weight":2},{"id":"v298","cost":57,"month":"2026-05","price":160,"product":"bo corail","ref":"#247","weight":1},{"id":"v299","cost":56,"month":"2026-05","price":125,"product":"Collier coeur","ref":"#456","weight":1.05},{"id":"v300","cost":46,"month":"2026-05","price":110,"product":"Créole OZ","ref":"#470","weight":1.2},{"id":"v301","cost":24,"month":"2026-05","price":60,"product":"Collier coeur 9k","ref":"#478","weight":0.62},{"id":"v302","cost":7,"month":"2026-05","price":65,"product":"Bo plume","ref":"#547","weight":0.65},{"id":"v303","cost":10,"month":"2026-05","price":50,"product":"Bracelet infini or OZ 9k","ref":"#563","weight":0.55},{"id":"v304","cost":14,"month":"2026-05","price":100,"product":"Bague infini OZ","ref":"#574","weight":0.85},{"id":"v305","cost":17,"month":"2026-05","price":50,"product":"bague aigue marine","ref":"#598","weight":1.7},{"id":"v306","cost":33,"month":"2026-05","price":65,"product":"Pendentif lézard","ref":"#640","weight":0.62},{"id":"v307","cost":246,"month":"2026-05","price":350,"product":"Bralet filigrame perles","ref":"#641","weight":3.39},{"id":"v308","cost":109,"month":"2026-05","price":180,"product":"Bague ors émeuraude","ref":"#663","weight":1.55},{"id":"v309","cost":92,"month":"2026-05","price":165,"product":"Bo Aigue marine","ref":"#698","weight":1.9},{"id":"v310","cost":17,"month":"2026-05","price":62,"product":"Bracelet cordon chat","ref":"#707","weight":0.48},{"id":"v311","cost":66,"month":"2026-05","price":150,"product":"Pendentif tahiti diam's","ref":"#711","weight":1.2},{"id":"v312","cost":32,"month":"2026-05","price":65,"product":"Bo vintage hématite","ref":"#723","weight":0.6},{"id":"v313","cost":16,"month":"2026-05","price":50,"product":"Pendentif perle coeur","ref":"#731","weight":0.2},{"id":"v314","cost":24,"month":"2026-05","price":55,"product":"Bo perles oz 9k","ref":"#736","weight":0.4},{"id":"v315","cost":41,"month":"2026-05","price":169,"product":"Bralet bruloques 2 ors coeurs","ref":"#737","weight":1.41},{"id":"v316","cost":66,"month":"2026-05","price":100,"product":"Collier 2 ors 9 k Boite","ref":"#742","weight":0.92},{"id":"v317","cost":50,"month":"2026-05","price":100,"product":"Bo papillon oz","ref":"#744","weight":0.99},{"id":"v318","cost":100,"month":"2026-05","price":240,"product":"Collier cable Maty","ref":"#750","weight":2.31},{"id":"v319","cost":7,"month":"2026-05","price":260,"product":"Collier bonette perles","ref":"#753","weight":1.8},{"id":"v320","cost":26,"month":"2026-05","price":50,"product":"Pendentif coeur Améthyste","ref":"#761","weight":0.39},{"id":"v321","cost":35,"month":"2026-05","price":133,"product":"Chaine","ref":"#764","weight":1.08},{"id":"v322","cost":0,"month":"2026-05","price":130,"product":"Bracelet Lapis lazulli","ref":"#767","weight":0.75},{"id":"v323","cost":0,"month":"2026-05","price":45,"product":"Pendentif oz étoile","ref":"#788","weight":0.25},{"id":"v324","cost":40,"month":"2026-05","price":120,"product":"Bo Tahiti","ref":"#790","weight":0.6},{"id":"v325","cost":33,"month":"2026-05","price":130,"product":"Bo 2 ors rubis","ref":"#793","weight":1.05},{"id":"v326","cost":108,"month":"2026-06","price":200,"product":"Collier3 coeurs","ref":"#531","weight":1.79},{"id":"v327","cost":42,"month":"2026-06","price":90,"product":"Chaine 8k","ref":"#760","weight":0.75},{"id":"v328","cost":44,"month":"2026-06","price":105,"product":"Bo coeur or blanc","ref":"#615","weight":1.07},{"id":"v329","cost":65,"month":"2026-06","price":165,"product":"Collier coeur oz","ref":"#617","weight":1.67},{"id":"v330","cost":14,"month":"2026-06","price":63,"product":"Bo coeur laqué","ref":"#808","weight":0.67},{"id":"v331","cost":26,"month":"2026-06","price":60,"product":"Bo Coeur strass","ref":"#802","weight":0.5},{"id":"v332","cost":56,"month":"2026-06","price":100,"product":"Bague Alliance oz","ref":"#724","weight":0.93},{"id":"v333","cost":19,"month":"2026-06","price":99,"product":"Bracelet quartz or 9k","ref":"#805","weight":0.75},{"id":"v334","cost":14,"month":"2026-06","price":69,"product":"Bo 2 ors perles 8k","ref":"#762","weight":0.6},{"id":"v335","cost":28,"month":"2026-06","price":111,"product":"Bo peroquet 8k","ref":"#807","weight":0.95},{"id":"v336","cost":30,"month":"2026-06","price":100,"product":"pendentif milluna","ref":"#007","weight":0.9},{"id":"v337","cost":14,"month":"2026-06","price":65,"product":"Bo Ambre","ref":"#836","weight":0.7},{"id":"v338","cost":17,"month":"2026-06","price":75,"product":"Bo 2 coeur bi comore","ref":"#817","weight":0.72},{"id":"v339","cost":14,"month":"2026-06","price":45,"product":"Bo perles gris","ref":"#792","weight":0.35},{"id":"v340","cost":18,"month":"2026-06","price":50,"product":"Bracelet maille boule 8k","ref":"#647","weight":0.32},{"id":"v341","cost":9,"month":"2026-06","price":55,"product":"Collier fil transparant hémamtite","ref":"#710","weight":0.5},{"id":"v342","cost":5,"month":"2026-06","price":130,"product":"Pendentif Marguerite Topaze","ref":"#719","weight":1.1},{"id":"v343","cost":27,"month":"2026-06","price":120,"product":"Créoles OZ","ref":"#706","weight":0.9},{"id":"v344","cost":7,"month":"2026-06","price":90,"product":"Pendentif larme perle","ref":"#809","weight":0.5},{"id":"v345","cost":6,"month":"2026-06","price":60,"product":"Bo papillon saphir","ref":"#833","weight":0.49},{"id":"v346","cost":9,"month":"2026-06","price":50,"product":"Pendentif nacre coeur","ref":"#679","weight":0.54},{"id":"v347","cost":25,"month":"2026-06","price":58,"product":"Bague 9k diam's","ref":"#611","weight":0.43},{"id":"v348","cost":145,"month":"2026-06","price":250,"product":"collier saphir","ref":"#054","weight":2.46},{"id":"v349","cost":87,"month":"2026-06","price":180,"product":"bague 2 ors mab","ref":"#098","weight":1.97},{"id":"v350","cost":35,"month":"2026-06","price":95,"product":"Bo noeud perle","ref":"#680","weight":0.88},{"id":"v351","cost":14,"month":"2026-06","price":59,"product":"Collier strass 9k","ref":"#800","weight":0.46},{"id":"v352","cost":13,"month":"2026-06","price":45,"product":"Bracelet boules strass 9k","ref":"#815","weight":0.3},{"id":"v353","cost":10,"month":"2026-06","price":60,"product":"Pendentif portrait 9k","ref":"#803","weight":0.55},{"id":"v354","cost":3,"month":"2026-06","price":70,"product":"Pendentif perle cage","ref":"#824","weight":0.65},{"id":"v355","cost":27,"month":"2026-06","price":55,"product":"Bo perles Tahiti","ref":"#831","weight":0.35},{"id":"v356","cost":62,"month":"2026-06","price":109,"product":"Créoles etoile","ref":"#774","weight":0.82},{"id":"v357","cost":40,"month":"2026-06","price":65,"product":"Pendentif clé nacré","ref":"#497","weight":0.6},{"id":"v358","cost":17,"month":"2026-06","price":55,"product":"Bo topaze","ref":"#908","weight":0.33},{"id":"v359","cost":32,"month":"2026-06","price":120,"product":"Créole oz","ref":"#867","weight":1},{"id":"v360","cost":66,"month":"2026-06","price":115,"product":"Bague aigue marine","ref":"#664","weight":1.13},{"id":"v361","cost":56,"month":"2026-06","price":140,"product":"Bracelet gourmette perle","ref":"#868","weight":1.2},{"id":"v362","cost":22,"month":"2026-06","price":100,"product":"Créole Irlande","ref":"#554","weight":0.59},{"id":"v363","cost":14,"month":"2026-06","price":85,"product":"Bo soleil","ref":"#819","weight":0.66},{"id":"v364","cost":25,"month":"2026-06","price":80,"product":"Percing trèfle oz","ref":"#863","weight":0.65},{"id":"v365","cost":168,"month":"2026-07","price":245,"product":"creole diam's","ref":"#374","weight":2.07},{"id":"v366","cost":66,"month":"2026-07","price":110,"product":"Pendentif grenat","ref":"#561","weight":0.7},{"id":"v367","cost":66,"month":"2026-07","price":129,"product":"Pendentif rond diam's","ref":"#570","weight":1.05},{"id":"v368","cost":72,"month":"2026-07","price":240,"product":"Pendentif trèfle topaze crochet","ref":"#642","weight":1.95},{"id":"v369","cost":51,"month":"2026-07","price":139,"product":"Pendentif tahiti diam's","ref":"#689","weight":0.8},{"id":"v370","cost":35,"month":"2026-07","price":62,"product":"Bo crochet 2 ors 9k","ref":"#718","weight":0.45},{"id":"v371","cost":56,"month":"2026-07","price":120,"product":"Bracelet 2 ors 9k","ref":"#733","weight":0.87},{"id":"v372","cost":162,"month":"2026-07","price":265,"product":"Parrure Rubis saphir emmeraude","ref":"#740","weight":2.66},{"id":"v373","cost":1,"month":"2026-07","price":65,"product":"Pendentif topaze","ref":"#745","weight":0.5},{"id":"v374","cost":42,"month":"2026-07","price":89,"product":"Bague MiMi saphir rose 9k","ref":"#751","weight":0.52},{"id":"v375","cost":30,"month":"2026-07","price":75,"product":"Chaine maille boule 9k","ref":"#754","weight":0.55},{"id":"v376","cost":30,"month":"2026-07","price":100,"product":"Pendentif perles tahiti","ref":"#755","weight":0.3},{"id":"v377","cost":18,"month":"2026-07","price":65,"product":"Pendentif clé","ref":"#766","weight":0.6},{"id":"v378","cost":26,"month":"2026-07","price":49,"product":"Pndentif palmier","ref":"#768","weight":0.31},{"id":"v379","cost":36,"month":"2026-07","price":85,"product":"Penentif chien","ref":"#785","weight":0.87},{"id":"v380","cost":36,"month":"2026-07","price":107,"product":"Pendentif Rubis diam's","ref":"#798","weight":0.9},{"id":"v381","cost":36,"month":"2026-07","price":75,"product":"Pendetif feuille","ref":"#823","weight":0.4},{"id":"v382","cost":52,"month":"2026-07","price":170,"product":"Bague Marguerite oz Rose","ref":"#827","weight":1.2},{"id":"v383","cost":9,"month":"2026-07","price":55,"product":"Bracelet Breloques Coeur 9k","ref":"#829","weight":0.52},{"id":"v384","cost":5,"month":"2026-07","price":140,"product":"Bo Améthyste Péridot","ref":"#839","weight":1.2},{"id":"v385","cost":66,"month":"2026-07","price":110,"product":"Perle de tahiti","ref":"#842","weight":0.8},{"id":"v386","cost":35,"month":"2026-07","price":135,"product":"Bo Qartz","ref":"#845","weight":1},{"id":"v387","cost":42,"month":"2026-07","price":150,"product":"Bague Marguerite oz saphir","ref":"#848","weight":1.1},{"id":"v388","cost":24,"month":"2026-07","price":50,"product":"Bracelet paillette 9k","ref":"#849","weight":0.37},{"id":"v389","cost":45,"month":"2026-07","price":90,"product":"Collier Am topaze citrine9k","ref":"#851","weight":0.78},{"id":"v390","cost":12,"month":"2026-07","price":59,"product":"Créoles 2ors 9k","ref":"#853","weight":0.38},{"id":"v391","cost":14,"month":"2026-07","price":135,"product":"Bo perles carré rose","ref":"#855","weight":1.3},{"id":"v392","cost":9,"month":"2026-07","price":28,"product":"Pendentif Coeur 2 ors","ref":"#856","weight":0.2},{"id":"v393","cost":22,"month":"2026-07","price":95,"product":"Bo feuille 3 ors","ref":"#857","weight":0.76},{"id":"v394","cost":24,"month":"2026-07","price":59,"product":"Bo fleur","ref":"#864","weight":0.42},{"id":"v395","cost":47,"month":"2026-07","price":105,"product":"Bo strolli strass","ref":"#876","weight":0.85},{"id":"v396","cost":31,"month":"2026-07","price":125,"product":"Bague oz","ref":"#882","weight":1.15},{"id":"v397","cost":5,"month":"2026-07","price":145,"product":"Bo spirale étoile","ref":"#886","weight":0.9},{"id":"v398","cost":5,"month":"2026-07","price":98,"product":"Bo 2 ors trilogie","ref":"#889","weight":0.8},{"id":"v399","cost":14,"month":"2026-07","price":60,"product":"Bague perle 9k","ref":"#892","weight":0.33},{"id":"v400","cost":6,"month":"2026-07","price":40,"product":"Bo hématite","ref":"#893","weight":0.38},{"id":"v401","cost":22,"month":"2026-07","price":65,"product":"Pendentif coeur ajouré lisse satinée","ref":"#895","weight":0.64},{"id":"v402","cost":34,"month":"2026-07","price":139,"product":"Bagues 2 ors diam's","ref":"#899","weight":1.15},{"id":"v403","cost":85,"month":"2026-07","price":165,"product":"Bague topaze","ref":"#903","weight":1.2},{"id":"v404","cost":5,"month":"2026-07","price":25,"product":"Bo coeur 9k","ref":"#909","weight":0.13},{"id":"v405","cost":30,"month":"2026-07","price":70,"product":"Bo 2 ors croisés","ref":"#912","weight":0.69},{"id":"v406","cost":45,"month":"2026-07","price":120,"product":"Bo dormeuse Améthyste","ref":"#917","weight":0.95},{"id":"v407","cost":72,"month":"2026-07","price":150,"product":"Bo Emeraude Alpha","ref":"#918","weight":1.33},{"id":"v408","cost":35,"month":"2026-07","price":85,"product":"Pendentif citrine","ref":"#923","weight":0.5},{"id":"v409","cost":35,"month":"2026-07","price":60,"product":"Braceley love 9k","ref":"#939","weight":0.23},{"id":"wg3fngvwn6nuqbxuaizu","accountId":"acc-yamizami","cost":50,"date":"2026-09-07","month":"2026-09","price":120,"product":"Pendentif topaze","ref":"983","weight":0.8}],"vintedAccounts":[{"id":"acc-camilla","ca":{"2026-01":351,"2026-02":334,"2026-03":554,"2026-04":560},"name":"Camilla","num":1},{"id":"acc-konoha","ca":{"2026-01":1066,"2026-02":415,"2026-03":1144,"2026-04":1399,"2026-05":1140,"2026-06":1037,"2026-07":1177,"2026-08":1068},"name":"Konoha","num":4},{"id":"acc-mh7183","ca":{"2026-01":701,"2026-02":600,"2026-03":664,"2026-04":1256,"2026-05":823,"2026-06":423,"2026-07":1961,"2026-08":1835},"name":"Mh7183","num":2},{"id":"acc-sasachacha","ca":{"2026-01":1915,"2026-02":784,"2026-03":1082,"2026-04":2080,"2026-05":830,"2026-06":1068,"2026-07":1084,"2026-08":1001},"name":"Sasachacha","num":3},{"id":"acc-yamizami","ca":{"2026-01":566,"2026-02":739,"2026-03":211,"2026-04":1385,"2026-05":759,"2026-06":1115,"2026-07":526,"2026-08":1510},"name":"Yamizami","num":5}],"meltLots":[{"id":"ml001","carat":"8k","cost":139,"salePrice":null,"sold":false,"weight18k":3.86,"weightOrigin":8.76},{"id":"ml002","carat":"9k","cost":449,"salePrice":null,"sold":false,"weight18k":11.94,"weightOrigin":28.43},{"id":"ml003","carat":"10k","cost":null,"ref":"Lot 3","salePrice":null,"sold":false,"weight18k":null,"weightOrigin":null},{"id":"ml004","carat":"14K","cost":1284,"salePrice":null,"sold":false,"weight18k":18.7,"weightOrigin":38.51},{"id":"ml005","carat":"18K","cost":2981,"salePrice":null,"sold":false,"weight18k":132.8,"weightOrigin":132.8}],"meltDhSales":[{"id":"2025-11","caEur":24929.58,"pricePerGramDh":900,"weightSold":295.11},{"id":"2026-01","caEur":12394.37,"pricePerGramDh":1020,"weightSold":130},{"id":"2026-02","caEur":22084.51,"pricePerGramDh":1120,"weightSold":210},{"id":"2026-04","caEur":16009,"pricePerGramDh":1100,"weightSold":155},{"id":"2026-05","caEur":13100,"pricePerGramDh":1020,"weightSold":134.44}],"goal":{"monthlyTarget":5649},"vintedThreshold":{"amount":15000},"meltRate18k":null};
+  var LS_KEY = "okazor-data";
+  var LOCAL_KEYS = ["stock","sales","vintedAccounts","meltLots","meltDhSales","goal","vintedThreshold","meltRate18k"];
+
+  function persistLocal(){
+    if(state.db) return;
+    try{
+      var out = {version: SNAPSHOT.version};
+      LOCAL_KEYS.forEach(function(k){ out[k] = state[k]; });
+      localStorage.setItem(LS_KEY, JSON.stringify(out));
+    }catch(e){}
+  }
+
+  function initLocal(){
+    var src = SNAPSHOT, saved = null;
+    try{ saved = JSON.parse(localStorage.getItem(LS_KEY) || "null"); }catch(e){}
+    if(saved && saved.version === SNAPSHOT.version) src = saved;
+    LOCAL_KEYS.forEach(function(k){ state[k] = cloneVal(src[k]); });
+    localIdCounter = Date.now();
+    setStatus(src === saved ? "Données locales (modifiées)" : "Données du " + fmtDate(SNAPSHOT.version.slice(0,10)));
+    renderAll();
+  }
+
+  function renderAll(){
+    persistLocal();
+    renderApercu();
+    renderStock();
+    renderVentes();
+    renderComptes();
+    renderFonte();
+    renderFonteDh();
+    renderUndoButtons();
+  }
+
+  document.getElementById("svDate").value = new Date().toISOString().slice(0,10);
+  document.getElementById("exportBtn").addEventListener("click", exportAllData);
+  initLocal();
+})();
+</script>
+
+</body></html>
