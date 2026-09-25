@@ -1,2 +1,3 @@
-﻿# OKAZOR Dashboard
-Live: https://alkhatib06.github.io/okazor-dashboard/
+# OKAZOR Dashboard
+
+Live : https://imamoun11.github.io/okazor-dashboard/
